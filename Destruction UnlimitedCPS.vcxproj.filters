@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook">
+      <UniqueIdentifier>{afa39464-592e-4174-a882-f7ba2fca9438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\Core">
+      <UniqueIdentifier>{43bc7d05-4604-4637-ba3f-60f327d59ade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\Core\ASM">
+      <UniqueIdentifier>{507f782b-35a6-468a-8fb5-fb499cfba6b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\JVM">
+      <UniqueIdentifier>{424f2835-a1f0-4822-b899-bb4ae248e32d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\JVM\hotspot">
+      <UniqueIdentifier>{0092a2f9-9bde-4397-a36f-9ae803538f8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\JVM\hotspot\src">
+      <UniqueIdentifier>{babe464d-7daa-4bd8-b0c6-ac34797a42b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\JVM\hotspot\src\share">
+      <UniqueIdentifier>{3d8c99b9-7b6e-4b45-ae1c-2a5beb837517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm">
+      <UniqueIdentifier>{d8eb348f-8d33-49d2-a1d3-3c45eb7936b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops">
+      <UniqueIdentifier>{1717c845-b898-48de-a4bb-8318c23cc45d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\JNI">
+      <UniqueIdentifier>{1f5b9665-9439-4b2f-b1c0-790f99ef877e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Utils">
+      <UniqueIdentifier>{274d374a-3724-45b6-a2fe-1203750e2b6b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DllMain.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="JNI\Handler.cpp">
+      <Filter>Исходные файлы\JNI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="JMethodHook\Core\RegistersInterceptor.hpp">
+      <Filter>Исходные файлы\JMethodHook\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\Core\JMethodInterceptor.hpp">
+      <Filter>Исходные файлы\JMethodHook\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\Core\ASM\AssemblerAPI.hpp">
+      <Filter>Исходные файлы\JMethodHook\Core\ASM</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\constantPool.hpp">
+      <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\constMethod.hpp">
+      <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\instanceKlass.hpp">
+      <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\method.hpp">
+      <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\symbol.hpp">
+      <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\PatternScanner.hpp">
+      <Filter>Исходные файлы\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="JNI\Handler.h">
+      <Filter>Исходные файлы\JNI</Filter>
+    </ClInclude>
+    <ClInclude Include="DllMain.hpp">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\ErrorHandler.hpp">
+      <Filter>Исходные файлы\Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
