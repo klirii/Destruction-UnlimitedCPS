@@ -26,7 +26,7 @@ namespace RegistersInterceptor {
 			WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(reinterpret_cast<uintptr_t>(address) + 10), movRegisters, 109, nullptr);
 		}
 	public:
-		CONTEXT registers = { 0 };
+		CONTEXT registers = {NULL};
 
 		virtual void intercept(PVOID address, byte opcodesSize) {
 			// Сохраняем инструкции которые стоят до создания прыжка, чтобы не поломать оригинальный код

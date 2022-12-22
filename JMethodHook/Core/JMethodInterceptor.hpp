@@ -10,8 +10,24 @@ namespace RegistersInterceptor {
 	public:
 		uint64_t callCounter = 0;
 
-		void intercept(PVOID address, std::function<USHORT(uintptr_t)> asmInsert) {
-			Method* method = reinterpret_cast<Method*>(address);
+		JMethodInterceptor(jmethodID mid) {
+			this->address = reinterpret_cast<PVOID>(*(reinterpret_cast<uintptr_t*>(mid)));
+		}
+		JMethodInterceptor(PVOID address) {
+			this->address = address;
+		}
+
+		JMethodInterceptor(jmethodID mid, std::function<USHORT(uintptr_t)> asmInsert) {
+			this->address = reinterpret_cast<PVOID>(*(reinterpret_cast<uintptr_t*>(mid)));
+			this->asmInsert = asmInsert;
+		}
+		JMethodInterceptor(PVOID address, std::function<USHORT(uintptr_t)> asmInsert) {
+			this->address = address;
+			this->asmInsert = asmInsert;
+		}
+
+		void intercept() {
+			Method* method = reinterpret_cast<Method*>(this->address);
 			PVOID alloc = VirtualAlloc(NULL, 4096, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 
 			// Записываем регистры в this->registers
@@ -23,11 +39,11 @@ namespace RegistersInterceptor {
 			WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(reinterpret_cast<uintptr_t>(alloc) + 120), inc, 6, nullptr);
 
 			USHORT offset2jmp = 126;
-			if (asmInsert) offset2jmp += asmInsert(reinterpret_cast<uintptr_t>(alloc) + offset2jmp);
+			if (this->asmInsert) offset2jmp += this->asmInsert(reinterpret_cast<uintptr_t>(alloc) + offset2jmp);
 
 			*reinterpret_cast<byte*>(reinterpret_cast<uintptr_t>(alloc) + offset2jmp) = 0x5A; // pop rdx для сохранения значения регистра
 
-			// Делаем jmp на _i2i_entry
+			// Делаем jmp на method->_code ? method->_from_interpreted_entry : method->_i2i_entry
 			AssemblerAPI::Assembler::jmp(reinterpret_cast<PVOID>(reinterpret_cast<uintptr_t>(alloc) + (offset2jmp + 1)),
 				method->_code ? method->_from_interpreted_entry : method->_i2i_entry);
 
@@ -35,20 +51,19 @@ namespace RegistersInterceptor {
 			byte newEntry[8];
 			ReadProcessMemory(GetCurrentProcess(), &alloc, newEntry, 8, nullptr);
 			WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(reinterpret_cast<uintptr_t>(method) + 0x50), newEntry, 8, nullptr);
-		}
 
-		void intercept(jmethodID mid, std::function<USHORT(uintptr_t)> asmInsert) {
-			PVOID address = reinterpret_cast<PVOID>(*(reinterpret_cast<uintptr_t*>(mid)));
-			this->intercept(address, asmInsert);
+			// Перезаписываем хук в структуру метода, в случае его перекомпиляции
+			while (true) {
+				if (*reinterpret_cast<uintptr_t*>(reinterpret_cast<uintptr_t>(method) + 0x50) != reinterpret_cast<uintptr_t>(alloc)) {
+					AssemblerAPI::Assembler::jmp(reinterpret_cast<PVOID>(reinterpret_cast<uintptr_t>(alloc) + (offset2jmp + 1)),
+						method->_code ? method->_from_interpreted_entry : method->_i2i_entry);
+					WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(reinterpret_cast<uintptr_t>(method) + 0x50), newEntry, 8, nullptr);
+				}
+				Sleep(1000);
+			}
 		}
-
-		void intercept(jmethodID mid) {
-			PVOID address = reinterpret_cast<PVOID>(*(reinterpret_cast<uintptr_t*>(mid)));
-			this->intercept(address, nullptr);
-		}
-
-		void intercept(PVOID address) {
-			this->intercept(address, nullptr);
-		}
+	private:
+		PVOID address;
+		std::function<USHORT(uintptr_t)> asmInsert;
 	};
 }

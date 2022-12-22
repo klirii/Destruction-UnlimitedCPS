@@ -1,7 +1,7 @@
 #include "Handler.h"
 
-JavaVM* JNIHandler::vm	= nullptr;
 HMODULE JNIHandler::jvm = GetModuleHandleA("jvm.dll");
+JavaVM* JNIHandler::vm	= nullptr;
 
 JNIEnv* JNIHandler::env = nullptr;
 jobject JNIHandler::ClassLoader = nullptr;
@@ -20,15 +20,15 @@ void JNIHandler::setEnv() {
 }
 
 void JNIHandler::setClassLoader() {
-	jclass klass = JNIHandler::env->FindClass("net/xtrafrancyz/vl/iiIiII");
-	jfieldID fid = JNIHandler::env->GetStaticFieldID(klass, " ", "Lnet/xtrafrancyz/vl/iIiiIi;");
+	jclass klass = JNIHandler::env->FindClass("net/xtrafrancyz/vl/iIiIiI");
+	jfieldID fid = JNIHandler::env->GetStaticFieldID(klass, " ", "Lnet/xtrafrancyz/vl/IIiIii;");
 	JNIHandler::ClassLoader = JNIHandler::env->GetStaticObjectField(klass, fid);
 }
 
-jclass JNIHandler::FindClass(const char* name) {
+jclass JNIHandler::FindClassFromCaller(const char* name) {
 	return JVM_FindClassFromCaller(JNIHandler::env, name, true, JNIHandler::ClassLoader, nullptr);
 }
 
-jclass JNIHandler::FindAnyClass(const char* name) {
+jclass JNIHandler::FindLoadedClass(const char* name) {
 	return JVM_FindLoadedClass(JNIHandler::env, JNIHandler::ClassLoader, env->NewStringUTF(name));
 }

@@ -1,5 +1,7 @@
 #include "DllMain.hpp"
+
 using namespace std;
+namespace RI = RegistersInterceptor;
 
 Method* FindMethodByBytecode(PBYTE bytes, USHORT len) {
 	// Создаём маску для паттерна
@@ -21,11 +23,17 @@ Method* FindMethodByBytecode(PBYTE bytes, USHORT len) {
 }
 
 USHORT changeValue(uintptr_t insertionAddress) {
-	jclass TexteriaOptions = JNIHandler::FindAnyClass("net/xtrafrancyz/mods/texteria/TexteriaOptions");
+	HANDLE hProc = GetCurrentProcess();
+
+	JNIHandler::setEnv();
+	JNIHandler::setClassLoader();
+
+	jclass TexteriaOptions = JNIHandler::FindLoadedClass("net/xtrafrancyz/mods/texteria/TexteriaOptions");
 	if (!TexteriaOptions) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 
+	// Если инстанс от которого вызывается метод совпадает с инстансом disableCpsLimit - меняем value на true
 	byte movRdxJClass[10] = { 0x48, 0xBA };
-	WriteProcessMemory(GetCurrentProcess(), movRdxJClass + 0x02, &TexteriaOptions, 8, nullptr);
+	WriteProcessMemory(hProc, movRdxJClass + 0x02, &TexteriaOptions, 8, nullptr);
 
 	byte movRdxDereference[3] = { 0x48, 0x8B, 0x12 };
 	byte movRdxDisableCpsLimit[4] = { 0x48, 0x8B, 0x52, 0x68 };
@@ -34,27 +42,26 @@ USHORT changeValue(uintptr_t insertionAddress) {
 	byte jne[2] = { 0x75, 0x08 };
 	byte movValue[8] = { 0xC7, 0x44, 0x24, 0x10, 0x01, 0x00, 0x00, 0x00 };
 
-	WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(insertionAddress), movRdxJClass, 10, nullptr);
-	WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(insertionAddress + 10), movRdxDereference, 3, nullptr);
-	WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(insertionAddress + 13), movRdxDisableCpsLimit, 4, nullptr);
-	WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(insertionAddress + 17), cmpInstance, 4, nullptr);
-	WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(insertionAddress + 21), jne, 2, nullptr);
-	WriteProcessMemory(GetCurrentProcess(), reinterpret_cast<LPVOID>(insertionAddress + 23), movValue, 8, nullptr);
+	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress), movRdxJClass, 10, nullptr);
+	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 10), movRdxDereference, 3, nullptr);
+	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 13), movRdxDisableCpsLimit, 4, nullptr);
+	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 17), cmpInstance, 4, nullptr);
+	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 21), jne, 2, nullptr);
+	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 23), movValue, 8, nullptr);
 	return 31;
 }
 
 void init() {
 	JNIHandler::setVM();
-	JNIHandler::setEnv();
-	JNIHandler::setClassLoader();
 
 	Method* method = FindMethodByBytecode(reinterpret_cast<PBYTE>(const_cast<char*>(
 		"\xDC\x1B\x99\x00\x09\xB2\x00\x00\xA7\x00\x06\xB2\x01\x00\xB6\x03\x00\xB1")),
 		18);
 
 	if (method) {
-		static RegistersInterceptor::JMethodInterceptor interceptor;
-		interceptor.intercept(method, changeValue);
+		RI::JMethodInterceptor* interceptor = new RI::JMethodInterceptor(method, changeValue);
+		thread interception(&RI::JMethodInterceptor::intercept, interceptor);
+		interception.detach();
 		MessageBoxA(Utils::ErrorHandler::window, "UnlimitedCPS успешно внедрён!\nПриятной игры!", "Destruction", MB_OK);
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include <jni.h>
 #include <Windows.h>
+#include <jni.h>
 
 class JNIHandler {
 public:
@@ -12,8 +12,8 @@ public:
 	static void setEnv();
 	static void setClassLoader();
 
-	static jclass FindClass(const char* name);
-	static jclass FindAnyClass(const char* name);
+	static jclass FindClassFromCaller(const char* name);
+	static jclass FindLoadedClass(const char* name);
 private:
 	static JavaVM* vm;
 

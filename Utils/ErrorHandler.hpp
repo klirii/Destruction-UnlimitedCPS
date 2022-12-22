@@ -12,7 +12,6 @@ namespace Utils {
 		static void send(int8_t error) {
 			char errorMessage[10];
 			sprintf_s(errorMessage, "Ошибка #%d", error);
-
 			MessageBoxA(window, errorMessage, "Destruction", MB_ICONERROR);
 		}
 	};

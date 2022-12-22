@@ -34,7 +34,6 @@ public:
 	Symbol** symbol_at_addr(int idx) const {
 		return reinterpret_cast<Symbol**>(&base()[idx]);
 	}
-
 	Symbol* symbol_at(int idx) const {
 		return *symbol_at_addr(idx);
 	}
