@@ -13,7 +13,7 @@ Method* FindMethodByBytecode(PBYTE bytes, USHORT len) {
 	if (!bytecode) Utils::ErrorHandler::send(METHOD_NOT_FOUND);
 
 	// Получаем адрес Method vTable`а
-	PVOID vTable = reinterpret_cast<PVOID>(reinterpret_cast<uintptr_t>(JNIHandler::jvm) + 0x56E6B8);
+	PVOID vTable = reinterpret_cast<PVOID>(reinterpret_cast<uintptr_t>(JNIHandler::jvm) + 0x56E6C8);
 	byte vTableAddress[8];
 	ReadProcessMemory(GetCurrentProcess(), &vTable, vTableAddress, 8, nullptr);
 
