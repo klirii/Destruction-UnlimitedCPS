@@ -3,30 +3,22 @@
 using namespace std;
 namespace RI = RegistersInterceptor;
 
-Method* FindMethodByBytecode(PBYTE bytes, USHORT len) {
-	// Создаём маску для паттерна
-	string mask;
-	for (USHORT i = 0; i < len; i++) mask += "x";
+Method* GetMethod(jclass clazz, const char* name, const char* sig) {
+	InstanceKlass* klass = reinterpret_cast<InstanceKlass*>(*reinterpret_cast<uintptr_t*>(*reinterpret_cast<DWORD*>(clazz) + 0x48));
+	for (uint16_t i = 0; i < klass->_methods->_length; i++) {
+		Method* method = klass->_methods->at(i);
+		if (strcmp(method->_constMethod->_constants->symbol_at(method->_constMethod->_name_index)->as_string().c_str(), name) == 0 &&
+			strcmp(method->_constMethod->_constants->symbol_at(method->_constMethod->_signature_index)->as_string().c_str(), sig) == 0) {
+			return method;
+		}
+	}
 
-	// Ищем байткод в памяти
-	PBYTE bytecode = Utils::PatternScanner::scan(bytes, const_cast<char*>(mask.c_str()));
-	if (!bytecode) Utils::ErrorHandler::send(METHOD_NOT_FOUND);
-
-	// Получаем адрес Method vTable`а
-	PVOID vTable = reinterpret_cast<PVOID>(reinterpret_cast<uintptr_t>(JNIHandler::jvm) + 0x56E6C8);
-	byte vTableAddress[8];
-	ReadProcessMemory(GetCurrentProcess(), &vTable, vTableAddress, 8, nullptr);
-
-	// Инкрементируем адрес байткода, пока не достигнем адрес Method vTable`а
-	while (!Utils::PatternScanner::compareBytes(bytecode, vTableAddress, const_cast<char*>("xxxxxxxx"))) bytecode++;
-	return reinterpret_cast<Method*>(bytecode);
+	return nullptr;
 }
 
 USHORT changeValue(uintptr_t insertionAddress) {
 	HANDLE hProc = GetCurrentProcess();
-
 	JNIHandler::setEnv();
-	JNIHandler::setClassLoader();
 
 	jclass TexteriaOptions = JNIHandler::FindLoadedClass("net/xtrafrancyz/mods/texteria/TexteriaOptions");
 	if (!TexteriaOptions) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
@@ -53,16 +45,19 @@ USHORT changeValue(uintptr_t insertionAddress) {
 
 void init() {
 	JNIHandler::setVM();
+	JNIHandler::setEnv();
+	JNIHandler::setClassLoader();
 
-	Method* method = FindMethodByBytecode(reinterpret_cast<PBYTE>(const_cast<char*>(
-		"\xDC\x1B\x99\x00\x09\xB2\x00\x00\xA7\x00\x06\xB2\x01\x00\xB6\x03\x00\xB1")),
-		18);
+	jclass WalkingBoolean = JNIHandler::FindLoadedClass("net/xtrafrancyz/covered/ObfValue$WalkingBoolean");
+	if (!WalkingBoolean) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 
-	if (method) {
-		RI::JMethodInterceptor* interceptor = new RI::JMethodInterceptor(method, changeValue);
+	Method* set = GetMethod(WalkingBoolean, "set", "(Z)V");
+	if (!set) Utils::ErrorHandler::send(METHOD_NOT_FOUND);
+
+	if (set) {
+		RI::JMethodInterceptor* interceptor = new RI::JMethodInterceptor(set, changeValue);
 		thread interception(&RI::JMethodInterceptor::intercept, interceptor);
 		interception.detach();
-		MessageBoxA(Utils::ErrorHandler::window, "UnlimitedCPS успешно внедрён!\nПриятной игры!", "Destruction", MB_OK);
 	}
 }
 

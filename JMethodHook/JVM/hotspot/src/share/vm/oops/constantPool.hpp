@@ -1,5 +1,5 @@
 #pragma once
-#include "instanceKlass.hpp"
+#include "symbol.hpp"
 #include <jni.h>
 
 class ConstantPool {
@@ -8,7 +8,7 @@ public:
 
 	void* _tags;
 	void* _cache;
-	InstanceKlass* _pool_holder;
+	void* _pool_holder;
 	void* _operands;
 
 	jobject _resolved_references;

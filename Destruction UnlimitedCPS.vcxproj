@@ -153,6 +153,7 @@
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\instanceKlass.hpp" />
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\method.hpp" />
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\symbol.hpp" />
+    <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\utilities\array.hpp" />
     <ClInclude Include="JNI\Handler.h" />
     <ClInclude Include="Utils\ErrorHandler.hpp" />
     <ClInclude Include="Utils\PatternScanner.hpp" />

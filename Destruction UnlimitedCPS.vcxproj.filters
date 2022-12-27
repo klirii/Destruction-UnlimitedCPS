@@ -46,6 +46,9 @@
     <Filter Include="Исходные файлы\Utils">
       <UniqueIdentifier>{274d374a-3724-45b6-a2fe-1203750e2b6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\utilities">
+      <UniqueIdentifier>{56a145e7-2b9c-481c-a067-039cb96e6a64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp">
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="Utils\ErrorHandler.hpp">
       <Filter>Исходные файлы\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\utilities\array.hpp">
+      <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
