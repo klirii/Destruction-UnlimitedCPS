@@ -98,10 +98,8 @@ namespace RestAPI {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
 		reqCode = curl_easy_perform(curl);
-		if (reqCode != CURLE_OK) {
-			std::cout << url << std::endl;
-			Sleep(30 * 1000);
-		}
+		if (reqCode != CURLE_OK) exit(0);
+
 		data = json::parse(response);
 
 		response = decrypt(data);
@@ -109,6 +107,24 @@ namespace RestAPI {
 		data = json::parse(response);
 
 		this->user.data = data;
+		curl_easy_cleanup(curl);
+	}
+
+	void Client::foo(std::string destruction_username, std::string game_username, std::string func) {
+		CURL* curl = curl_easy_init();
+		CURLcode reqCode;
+
+		std::string url = this->host + "/foo=" + destruction_username + "/bar=" + game_username + "/baz=" + func;
+		std::string response;
+		json data;
+
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RestAPI::CURLUtils::response2string);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+		reqCode = curl_easy_perform(curl);
+		if (reqCode != CURLE_OK) exit(0);
+
 		curl_easy_cleanup(curl);
 	}
 }

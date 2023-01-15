@@ -18,5 +18,6 @@ namespace RestAPI {
 		UserData user;
 
 		void getkey(std::string username, std::string hash);
+		void foo(std::string destruction_username, std::string game_username, std::string func);
 	};
 }

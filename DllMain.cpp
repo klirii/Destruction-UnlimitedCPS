@@ -40,7 +40,7 @@ USHORT changeValue(uintptr_t insertionAddress) {
 	return 31;
 }
 
-void licenseCheck() {
+void checkLicense() {
 	while (true) {
 		client.getkey(client.user.name, "CAFEBABE");
 		
@@ -61,7 +61,7 @@ void init() {
 	JNIHandler::setVM();
 	JNIHandler::setEnv();
 	JNIHandler::setClassLoader();
-	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(licenseCheck), nullptr, NULL, nullptr);
+	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(checkLicense), nullptr, NULL, nullptr);
 
 	jclass WalkingBoolean = JNIHandler::FindLoadedClass("net/xtrafrancyz/covered/ObfValue$WalkingBoolean");
 	if (!WalkingBoolean) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
@@ -94,6 +94,7 @@ BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 			nlohmann::json features = nlohmann::json::parse(client.user.data["features"].dump());
 			if (features.contains("unlimitedcps")) {
 				if (features["unlimitedcps"].get<int>() > 0) {
+					client.foo(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS");
 					CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, NULL, nullptr);
 				}
 			}
