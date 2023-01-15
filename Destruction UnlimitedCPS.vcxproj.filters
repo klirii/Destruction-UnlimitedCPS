@@ -49,6 +49,18 @@
     <Filter Include="Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\utilities">
       <UniqueIdentifier>{56a145e7-2b9c-481c-a067-039cb96e6a64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\RestAPI">
+      <UniqueIdentifier>{8fec8564-4cad-4ea4-b48c-117442ca3559}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\RestAPI\Core">
+      <UniqueIdentifier>{a8ea3d03-8aa8-4c03-b046-b4ef7a40a62f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\RestAPI\Utils">
+      <UniqueIdentifier>{d55a9952-cc26-4175-be94-e9ee94b5e6f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Config">
+      <UniqueIdentifier>{f2961b7e-d543-4e32-aabd-a313e91496dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp">
@@ -56,6 +68,15 @@
     </ClCompile>
     <ClCompile Include="JNI\Handler.cpp">
       <Filter>Исходные файлы\JNI</Filter>
+    </ClCompile>
+    <ClCompile Include="RestAPI\Core\Client.cpp">
+      <Filter>Исходные файлы\RestAPI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RestAPI\Utils\Utils.cpp">
+      <Filter>Исходные файлы\RestAPI\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\ConfigManager.cpp">
+      <Filter>Исходные файлы\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +118,21 @@
     </ClInclude>
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\utilities\array.hpp">
       <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="RestAPI\Core\Client.hpp">
+      <Filter>Исходные файлы\RestAPI\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Time.hpp">
+      <Filter>Исходные файлы\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="RestAPI\Utils\Utils.hpp">
+      <Filter>Исходные файлы\RestAPI\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Config\ConfigManager.hpp">
+      <Filter>Исходные файлы\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Hashes.hpp">
+      <Filter>Исходные файлы\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

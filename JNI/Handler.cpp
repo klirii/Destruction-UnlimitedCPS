@@ -1,13 +1,20 @@
 #include "Handler.h"
+#pragma warning(disable:6387)
 
-HMODULE JNIHandler::jvm = GetModuleHandleA("jvm.dll");
+HMODULE JNIHandler::jvm = nullptr;
 JavaVM* JNIHandler::vm	= nullptr;
 
 JNIEnv* JNIHandler::env = nullptr;
 jobject JNIHandler::ClassLoader = nullptr;
 
-JNIHandler::pJVM_FindClassFromCaller JNIHandler::JVM_FindClassFromCaller = reinterpret_cast<JNIHandler::pJVM_FindClassFromCaller>(GetProcAddress(JNIHandler::jvm, "IIllIlIIIlll"));
-JNIHandler::pJVM_FindLoadedClass JNIHandler::JVM_FindLoadedClass = reinterpret_cast<JNIHandler::pJVM_FindLoadedClass>(GetProcAddress(JNIHandler::jvm, "IllIIlIllIlI"));
+JNIHandler::pJVM_FindClassFromCaller JNIHandler::JVM_FindClassFromCaller = nullptr;
+JNIHandler::pJVM_FindLoadedClass JNIHandler::JVM_FindLoadedClass = nullptr;
+
+void JNIHandler::initStaticFields() {
+	jvm = GetModuleHandleA("jvm.dll");
+	JVM_FindClassFromCaller = reinterpret_cast<JNIHandler::pJVM_FindClassFromCaller>(GetProcAddress(JNIHandler::jvm, "IIllIlIIIlll"));
+	JVM_FindLoadedClass = reinterpret_cast<JNIHandler::pJVM_FindLoadedClass>(GetProcAddress(JNIHandler::jvm, "IllIIlIllIlI"));
+}
 
 void JNIHandler::setVM() {
 	typedef jint(JNICALL* pJNI_GetCreatedJavaVMs)(JavaVM** vmBuf, jsize bufLen, jsize* nVMs);

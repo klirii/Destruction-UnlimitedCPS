@@ -8,6 +8,8 @@ public:
 	static JNIEnv* env;
 	static jobject ClassLoader;
 
+	static void initStaticFields();
+
 	static void setVM();
 	static void setEnv();
 	static void setClassLoader();

@@ -1,8 +1,5 @@
 #include "DllMain.hpp"
 
-using namespace std;
-namespace RI = RegistersInterceptor;
-
 Method* GetMethod(jclass clazz, const char* name, const char* sig) {
 	InstanceKlass* klass = reinterpret_cast<InstanceKlass*>(*reinterpret_cast<uintptr_t*>(*reinterpret_cast<DWORD*>(clazz) + 0x48));
 	for (uint16_t i = 0; i < klass->_methods->_length; i++) {
@@ -43,10 +40,28 @@ USHORT changeValue(uintptr_t insertionAddress) {
 	return 31;
 }
 
+void licenseCheck() {
+	while (true) {
+		client.getkey(client.user.name, "CAFEBABE");
+		
+		if (std::string(client.user.data["session"]) != client.user.session) exit(0);
+		if (std::string(client.user.data["un_hash"]) != Utils::Hashes::GetUnHash()) ExitProcess(0);
+		if (std::string(client.user.data["re_hash"]) != Utils::Hashes::GetReHash()) exit(0);
+
+		if (client.user.data["features"].empty()) exit(0);
+		nlohmann::json features = nlohmann::json::parse(client.user.data["features"].dump());
+		if (!features.contains("unlimitedcps")) ExitProcess(0);
+		if (features["unlimitedcps"].get<int>() <= 0) exit(0);
+
+		Sleep(30 * 1000);
+	}
+}
+
 void init() {
 	JNIHandler::setVM();
 	JNIHandler::setEnv();
 	JNIHandler::setClassLoader();
+	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(licenseCheck), nullptr, NULL, nullptr);
 
 	jclass WalkingBoolean = JNIHandler::FindLoadedClass("net/xtrafrancyz/covered/ObfValue$WalkingBoolean");
 	if (!WalkingBoolean) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
@@ -61,10 +76,29 @@ void init() {
 	}
 }
 
+void initStaticFields() {
+	JNIHandler::initStaticFields();
+}
+
 BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 	switch (reason) {
-	case DLL_PROCESS_ATTACH:
-		CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, NULL, nullptr);
+	case DLL_VIMEWORLD_ATTACH:
+		initStaticFields();
+
+		client.host = "https://destructiqn.com:9990";
+		client.user.name = ConfigManager::ParseUsername();
+		client.user.session = reinterpret_cast<const char*>(reserved);
+
+		client.getkey(client.user.name, Utils::Hashes::GetReHash());
+		if (!client.user.data["features"].empty()) {
+			nlohmann::json features = nlohmann::json::parse(client.user.data["features"].dump());
+			if (features.contains("unlimitedcps")) {
+				if (features["unlimitedcps"].get<int>() > 0) {
+					CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, NULL, nullptr);
+				}
+			}
+		}
+
 		break;
 	}
 
