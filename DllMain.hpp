@@ -1,6 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define DLL_VIMEWORLD_ATTACH 0x888
 
+#pragma warning(disable:4312)
+#pragma warning(disable:26451)
+
 #include <Windows.h>
 #include <thread>
 
@@ -14,8 +17,6 @@
 
 #include "RestAPI/Core/Client.hpp"
 #include "Config/ConfigManager.hpp"
-
-#pragma warning(disable:4312)
 
 using namespace std;
 using json = nlohmann::json;
