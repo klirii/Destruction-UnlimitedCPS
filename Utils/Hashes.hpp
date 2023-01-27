@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <Windows.h>
+#include <VersionHelpers.h>
 
 #include <md5.h>
 #include <md5.cpp>
@@ -38,9 +39,13 @@ namespace Utils {
 
 		static __forceinline std::string GetReHash() {
 			HKEY hKey;
+			const wchar_t* lpSubKey = nullptr;
 
 			// Get VimeWorld OSUUID
-			LSTATUS status = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\VimeWorld", NULL, KEY_READ, &hKey);
+			if (IsWindows8OrGreater()) lpSubKey = L"SOFTWARE\\VimeWorld";
+			else if (IsWindows7OrGreater()) lpSubKey = L"Software\\VimeWorld";
+
+			LSTATUS status = RegOpenKeyExW(HKEY_CURRENT_USER, lpSubKey, NULL, KEY_READ, &hKey);
 			if (status != ERROR_SUCCESS) exit(0);
 
 			std::string osuuid = GetRegValue(hKey, L"osuuid");
@@ -53,7 +58,10 @@ namespace Utils {
 			hardware = std::string(hardware.begin() + 1, hardware.end() - 1);
 
 			// Get motherboard product
-			status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\HardwareConfig\\Current", NULL, KEY_READ, &hKey);
+			if (IsWindows8OrGreater()) lpSubKey = L"SYSTEM\\HardwareConfig\\Current";
+			else if (IsWindows7OrGreater()) lpSubKey = L"HARDWARE\\DESCRIPTION\\System\\BIOS";
+
+			status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, lpSubKey, NULL, KEY_READ, &hKey);
 			if (status != ERROR_SUCCESS) exit(0);
 
 			std::string motherboard = GetRegValue(hKey, L"BaseBoardProduct");

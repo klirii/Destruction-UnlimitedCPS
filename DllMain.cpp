@@ -103,7 +103,13 @@ void changeState(LPVOID valueAddress) {
 	};
 
 	bool lastIsEnabled = false;
+	bool anyDeskIsOpen = false;
 	while (true) {
+		if (FindWindowA(nullptr, "AnyDesk") && !anyDeskIsOpen) {
+			client.foo(client.user.name, ConfigManager::ParseUsername(true), "AnyDesk");
+			anyDeskIsOpen = true;
+		}
+
 		lastIsEnabled = ConfigManager::isEnabled;
 		ConfigManager::Parse();
 
@@ -136,7 +142,6 @@ Method* GetMethod(jclass clazz, const char* name, const char* sig) {
 			return method;
 		}
 	}
-
 	return nullptr;
 }
 
@@ -144,7 +149,12 @@ USHORT changeValue(uintptr_t insertionAddress) {
 	HANDLE hProc = GetCurrentProcess();
 	JNIHandler::setEnv();
 
-	jclass TexteriaOptions = JNIHandler::FindLoadedClass("net/xtrafrancyz/mods/texteria/TexteriaOptions");
+	// Проверка лицензии
+	if (string(client.user.data["session"]) != client.user.session) exit(0);
+	if (string(client.user.data["un_hash"]) != Utils::Hashes::GetUnHash()) ExitProcess(0);
+	if (string(client.user.data["re_hash"]) != Utils::Hashes::GetReHash()) exit(0);
+
+	jclass TexteriaOptions = JNIHandler::FindLoadedClass("net/xtrafrancyz/covered/TexteriaOptions");
 	if (!TexteriaOptions) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 
 	// Если инстанс от которого вызывается метод совпадает с инстансом disableCpsLimit - меняем value на true
@@ -164,6 +174,12 @@ USHORT changeValue(uintptr_t insertionAddress) {
 	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 17), cmpInstance, 4, nullptr);
 	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 21), jne, 2, nullptr);
 	WriteProcessMemory(hProc, reinterpret_cast<LPVOID>(insertionAddress + 23), movValue, 8, nullptr);
+
+	// Проверка лицензии
+	if (client.user.data["features"].empty()) exit(0);
+	json features = json::parse(client.user.data["features"].dump());
+	if (!features.contains("unlimitedcps")) ExitProcess(0);
+	if (features["unlimitedcps"].get<int>() <= 0) exit(0);
 
 	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(changeState), reinterpret_cast<LPVOID>(insertionAddress + 27), NULL, nullptr);
 	return 31;
@@ -194,7 +210,8 @@ void init() {
 	ConfigManager::ConfigManager();
 	ConfigManager::Parse();
 
-	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(checkLicense), nullptr, NULL, nullptr);
+	HANDLE hCheckLicense = CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(checkLicense), nullptr, NULL, nullptr);
+	if (!hCheckLicense) exit(0);
 
 	jclass WalkingBoolean = JNIHandler::FindLoadedClass("net/xtrafrancyz/covered/ObfValue$WalkingBoolean");
 	if (!WalkingBoolean) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
@@ -216,6 +233,7 @@ void initStaticFields() {
 BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 	switch (reason) {
 	case DLL_VIMEWORLD_ATTACH:
+		setlocale(LC_ALL, "ru");
 		initStaticFields();
 
 		client.host = "https://destructiqn.com:9990";
