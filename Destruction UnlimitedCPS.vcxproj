@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\Program Files\Java\jdk1.8.0_351\include;D:\Program Files\Java\jdk1.8.0_351\include\win32;D:\Program Files\Java\jdk1.8.0_351\include\win32\bridge;D:\libs\curl\Release x64\include;D:\libs\json\include;D:\libs\md5cpp\include;D:\libs\cpp_string_utils-main\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Program Files\Java\jdk1.8.0_191\include;D:\Program Files\Java\jdk1.8.0_191\include\win32;D:\Program Files\Java\jdk1.8.0_191\include\win32\bridge;D:\libs\curl\Release x64\include;D:\libs\json\include;D:\libs\md5cpp\include;D:\libs\cpp_string_utils-main\include;$(IncludePath)</IncludePath>
     <TargetName>unlimitedcps</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -166,6 +166,7 @@
     <ClInclude Include="RestAPI\Utils\Utils.hpp" />
     <ClInclude Include="Utils\ErrorHandler.hpp" />
     <ClInclude Include="Utils\Hashes.hpp" />
+    <ClInclude Include="Utils\Keybind.hpp" />
     <ClInclude Include="Utils\PatternScanner.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
   </ItemGroup>

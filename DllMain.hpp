@@ -11,6 +11,7 @@
 #include "Utils/PatternScanner.hpp"
 #include "Utils/ErrorHandler.hpp"
 #include "Utils/Hashes.hpp"
+#include "Utils/Keybind.hpp"
 
 #include "JMethodHook/JVM/hotspot/src/share/vm/oops/instanceKlass.hpp"
 #include "JMethodHook/Core/JMethodInterceptor.hpp"

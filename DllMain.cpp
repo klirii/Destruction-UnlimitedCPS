@@ -1,109 +1,66 @@
 #include "DllMain.hpp"
 
-void changeState(LPVOID valueAddress) {
-	map<string, byte> Keycodes = {
-		{"MBUTTON", VK_MBUTTON},
-		{"XBUTTON1", VK_XBUTTON1},
-		{"XBUTTON2", VK_XBUTTON2},
+void ChangeState() {
+	char title[128];
+	GetWindowTextA(GetForegroundWindow(), title, 128);
 
-		{"SHIFT", VK_SHIFT},
-		{"LSHIFT", VK_LSHIFT},
-		{"RSHIFT", VK_RSHIFT},
+	if (strcmp(title, "VimeWorld") == 0) {
+		ConfigManager::isEnabled = !ConfigManager::isEnabled;
+		*Keybind::isEnabled = ConfigManager::isEnabled;
+		ConfigManager::ChangeState(ConfigManager::keybind, ConfigManager::isEnabled);
+	}
+}
 
-		{"CTRL", VK_CONTROL},
-		{"LCTRL", VK_LCONTROL},
-		{"RCTRL", VK_RCONTROL},
+LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
+	if (nCode == HC_ACTION) {
+		switch (wParam) {
+		case WM_KEYDOWN:
+			if (Keybind::GetVirtualKeyCodeByKeyName(ConfigManager::keybind))
+				if (reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam)->vkCode == Keybind::GetVirtualKeyCodeByKeyName(ConfigManager::keybind))
+					ChangeState();
+			break;
+		}
+	}
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
 
-		{"ALT", VK_MENU},
-		{"LALT", VK_LMENU},
-		{"RALT", VK_RMENU},
+LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
+	if (nCode == HC_ACTION) {
+		switch (wParam) {
+		case WM_MBUTTONDOWN:
+			if (ConfigManager::keybind == "MBUTTON")
+				ChangeState();
+			break;
+		case WM_XBUTTONDOWN:
+			PMSLLHOOKSTRUCT p = reinterpret_cast<PMSLLHOOKSTRUCT>(lParam);
+			if ((p->mouseData >> 16) == 1 && ConfigManager::keybind == "XBUTTON1")
+				ChangeState();
+			else if ((p->mouseData >> 16) == 2 && ConfigManager::keybind == "XBUTTON2")
+				ChangeState();
+			break;
+		}
+	}
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
 
-		{"TAB", VK_TAB},
-		{"BACKSPACE", VK_BACK},
-		{"ENTER", VK_RETURN},
-		{"PAUSE", VK_PAUSE},
-		{"CAPS", VK_CAPITAL},
-		{"ESCAPE", VK_ESCAPE},
-		{"SPACE", VK_SPACE},
-		{"PAGEUP", VK_PRIOR},
-		{"PAGEDOWN", VK_NEXT},
-		{"END", VK_END},
-		{"HOME", VK_HOME},
-		{"SELECT", VK_SELECT},
-		{"PRINTSCREEN", VK_PRINT},
-		{"NUM_LOCK", VK_NUMLOCK},
-		{"SCROLL_LOCK", VK_SCROLL},
+void SetKeyboardAndMouseHooks() {
+	HHOOK hook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, nullptr, NULL);
+	if (!hook) Utils::ErrorHandler::send(KEYBOARD_HOOK_ERROR);
 
-		{"0", 0x30},
-		{"1", 0x31},
-		{"2", 0x32},
-		{"3", 0x33},
-		{"4", 0x34},
-		{"5", 0x35},
-		{"6", 0x36},
-		{"7", 0x37},
-		{"8", 0x38},
-		{"9", 0x39},
+	hook = SetWindowsHookEx(WH_MOUSE_LL, LowLevelMouseProc, nullptr, NULL);
+	if (!hook) Utils::ErrorHandler::send(MOUSE_HOOK_ERROR);
 
-		{"NUMPAD_0", VK_NUMPAD0},
-		{"NUMPAD_1", VK_NUMPAD1},
-		{"NUMPAD_2", VK_NUMPAD2},
-		{"NUMPAD_3", VK_NUMPAD3},
-		{"NUMPAD_4", VK_NUMPAD4},
-		{"NUMPAD_5", VK_NUMPAD5},
-		{"NUMPAD_6", VK_NUMPAD6},
-		{"NUMPAD_7", VK_NUMPAD7},
-		{"NUMPAD_8", VK_NUMPAD8},
-		{"NUMPAD_9", VK_NUMPAD9},
+	MSG msg;
+	while (!GetMessage(&msg, nullptr, NULL, NULL)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+}
 
-		{"F1", VK_F1},
-		{"F2", VK_F2},
-		{"F3", VK_F3},
-		{"F4", VK_F4},
-		{"F5", VK_F5},
-		{"F6", VK_F6},
-		{"F7", VK_F7},
-		{"F8", VK_F8},
-		{"F9", VK_F9},
-		{"F10", VK_F10},
-		{"F11", VK_F11},
-		{"F12", VK_F12},
-
-		{"A", 0x41},
-		{"B", 0x42},
-		{"C", 0x43},
-		{"D", 0x44},
-		{"E", 0x45},
-		{"F", 0x46},
-		{"G", 0x47},
-		{"H", 0x48},
-		{"I", 0x49},
-		{"J", 0x4A},
-		{"K", 0x4B},
-		{"L", 0x4C},
-		{"M", 0x4D},
-		{"N", 0x4E},
-		{"O", 0x4F},
-		{"P", 0x50},
-		{"Q", 0x51},
-		{"R", 0x52},
-		{"S", 0x53},
-		{"T", 0x54},
-		{"U", 0x55},
-		{"V", 0x56},
-		{"W", 0x57},
-		{"X", 0x58},
-		{"Y", 0x59},
-		{"Z", 0x5A},
-
-		{"LEFT", VK_LEFT},
-		{"UP", VK_UP},
-		{"RIGHT", VK_RIGHT},
-		{"DOWN", VK_DOWN},
-	};
-
+void CheckState() {
 	bool lastIsEnabled = false;
 	bool anyDeskIsOpen = false;
+
 	while (true) {
 		if (FindWindowA(nullptr, "AnyDesk") && !anyDeskIsOpen) {
 			client.foo(client.user.name, ConfigManager::ParseUsername(true), "AnyDesk");
@@ -113,23 +70,12 @@ void changeState(LPVOID valueAddress) {
 		lastIsEnabled = ConfigManager::isEnabled;
 		ConfigManager::Parse();
 
-		if (Keycodes.count(ConfigManager::keybind)) {
-			if (GetAsyncKeyState(Keycodes[ConfigManager::keybind]) & 1) {
-				char title[128];
-				GetWindowTextA(GetForegroundWindow(), title, 128);
-
-				if (strcmp(title, "VimeWorld") == 0) {
-					WriteProcessMemory(GetCurrentProcess(), valueAddress, &ConfigManager::isEnabled, 1, nullptr);
-					ConfigManager::isEnabled = !ConfigManager::isEnabled;
-					ConfigManager::ChangeState(ConfigManager::keybind, ConfigManager::isEnabled);
-				}
-			}
-		}
-
 		if (lastIsEnabled != ConfigManager::isEnabled) {
-			WriteProcessMemory(GetCurrentProcess(), valueAddress, &ConfigManager::isEnabled, 1, nullptr);
+			*Keybind::isEnabled = ConfigManager::isEnabled;
 			ConfigManager::ChangeState(ConfigManager::keybind, ConfigManager::isEnabled);
 		}
+
+		Sleep(333);
 	}
 }
 
@@ -145,7 +91,7 @@ Method* GetMethod(jclass clazz, const char* name, const char* sig) {
 	return nullptr;
 }
 
-USHORT changeValue(uintptr_t insertionAddress) {
+USHORT ChangeValue(uintptr_t insertionAddress) {
 	HANDLE hProc = GetCurrentProcess();
 	JNIHandler::setEnv();
 
@@ -181,11 +127,12 @@ USHORT changeValue(uintptr_t insertionAddress) {
 	if (!features.contains("unlimitedcps")) ExitProcess(0);
 	if (features["unlimitedcps"].get<int>() <= 0) exit(0);
 
-	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(changeState), reinterpret_cast<LPVOID>(insertionAddress + 27), NULL, nullptr);
+	Keybind::isEnabled = reinterpret_cast<PBYTE>(insertionAddress + 27);
+	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(CheckState), nullptr, NULL, nullptr);
 	return 31;
 }
 
-void checkLicense() {
+void CheckLicense() {
 	while (true) {
 		client.getkey(client.user.name, "CAFEBABE");
 		
@@ -198,7 +145,7 @@ void checkLicense() {
 		if (!features.contains("unlimitedcps")) ExitProcess(0);
 		if (features["unlimitedcps"].get<int>() <= 0) exit(0);
 
-		Sleep(30 * 1000);
+		Sleep(30000);
 	}
 }
 
@@ -210,7 +157,7 @@ void init() {
 	ConfigManager::ConfigManager();
 	ConfigManager::Parse();
 
-	HANDLE hCheckLicense = CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(checkLicense), nullptr, NULL, nullptr);
+	HANDLE hCheckLicense = CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(CheckLicense), nullptr, NULL, nullptr);
 	if (!hCheckLicense) exit(0);
 
 	jclass WalkingBoolean = JNIHandler::FindLoadedClass("net/xtrafrancyz/covered/ObfValue$WalkingBoolean");
@@ -220,10 +167,12 @@ void init() {
 	if (!set) Utils::ErrorHandler::send(METHOD_NOT_FOUND);
 
 	if (set) {
-		RI::JMethodInterceptor* interceptor = new RI::JMethodInterceptor(set, changeValue);
+		RI::JMethodInterceptor* interceptor = new RI::JMethodInterceptor(set, ChangeValue);
 		thread interception(&RI::JMethodInterceptor::intercept, interceptor);
 		interception.detach();
 	}
+
+	SetKeyboardAndMouseHooks();
 }
 
 void initStaticFields() {
