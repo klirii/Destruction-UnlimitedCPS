@@ -27,8 +27,8 @@ void JNIHandler::setEnv() {
 }
 
 void JNIHandler::setClassLoader() {
-	jclass clazz = JNIHandler::env->FindClass("net/xtrafrancyz/vl/iIii");
-	jfieldID fid = JNIHandler::env->GetStaticFieldID(clazz, " ", "Lnet/xtrafrancyz/vl/IiiIiI;");
+	jclass clazz = JNIHandler::env->FindClass("net/xtrafrancyz/vl/IIiiii");
+	jfieldID fid = JNIHandler::env->GetStaticFieldID(clazz, " ", "Lnet/xtrafrancyz/vl/iIiIii;");
 	JNIHandler::ClassLoader = JNIHandler::env->GetStaticObjectField(clazz, fid);
 }
 
