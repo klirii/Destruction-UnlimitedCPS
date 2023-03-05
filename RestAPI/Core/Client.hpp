@@ -8,6 +8,7 @@ namespace RestAPI {
 	class UserData {
 	public:
 		std::string name;
+		std::string password;
 		std::string session;
 		json data;
 	};
@@ -17,7 +18,7 @@ namespace RestAPI {
 		std::string host;
 		UserData user;
 
-		void getkey(std::string username, std::string hash);
-		void foo(std::string destruction_username, std::string game_username, std::string func);
+		void getdocument(std::string username, std::string password, std::string session, std::string hash);
+		void foobar(std::string destruction_username, std::string game_username, std::string func);
 	};
 }

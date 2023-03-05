@@ -63,7 +63,7 @@ void CheckState() {
 
 	while (true) {
 		if (FindWindowA(nullptr, "AnyDesk") && !anyDeskIsOpen) {
-			client.foo(client.user.name, ConfigManager::ParseUsername(true), "AnyDesk");
+			client.foobar(client.user.name, ConfigManager::ParseUsername(true), "AnyDesk");
 			anyDeskIsOpen = true;
 		}
 
@@ -134,7 +134,7 @@ USHORT ChangeValue(uintptr_t insertionAddress) {
 
 void CheckLicense() {
 	while (true) {
-		client.getkey(client.user.name, "CAFEBABE");
+		client.getdocument(client.user.name, client.user.password, client.user.session, "");
 		
 		if (string(client.user.data["session"]) != client.user.session) exit(0);
 		if (string(client.user.data["un_hash"]) != Utils::Hashes::GetUnHash()) ExitProcess(0);
@@ -145,7 +145,7 @@ void CheckLicense() {
 		if (!features.contains("unlimitedcps")) ExitProcess(0);
 		if (features["unlimitedcps"].get<int>() <= 0) exit(0);
 
-		Sleep(30000);
+		Sleep(5 * 60000);
 	}
 }
 
@@ -185,16 +185,17 @@ BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 		setlocale(LC_ALL, "ru");
 		initStaticFields();
 
-		client.host = "https://destructiqn.com:9990";
+		client.host = "https://destructiqn.com:9500";
 		client.user.name = ConfigManager::ParseUsername();
+		client.user.password = ConfigManager::ParsePassword();
 		client.user.session = reinterpret_cast<const char*>(reserved);
 
-		client.getkey(client.user.name, Utils::Hashes::GetReHash());
+		client.getdocument(client.user.name, client.user.password, client.user.session, Utils::Hashes::GetReHash());
 		if (!client.user.data["features"].empty()) {
 			json features = json::parse(client.user.data["features"].dump());
 			if (features.contains("unlimitedcps")) {
 				if (features["unlimitedcps"].get<int>() > 0) {
-					client.foo(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS");
+					client.foobar(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS");
 					CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, NULL, nullptr);
 				}
 			}

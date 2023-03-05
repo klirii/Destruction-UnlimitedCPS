@@ -9,6 +9,7 @@ public:
 	static std::string keybind;
 
 	static std::string ParseUsername(bool game = false);
+	static std::string ParsePassword();
 
 	static void ChangeState(std::string keybind, bool isEnabled);
 	static void Parse();

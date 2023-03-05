@@ -41,55 +41,37 @@ namespace RestAPI {
 		}
 	}
 
-	std::string __forceinline generate_hash(std::string servertime) {
-		for (uint8_t i = 0; i < 22; i++) {
-			srand(::Utils::Time::now.UnixNano());
-			servertime += Utils::n2hexstr(rand() % 16, 1);
-			Sleep(1);
+	json __forceinline decrypt(json data) {
+		std::string document = data["document"];
+		std::string hashblocks[4] = { data["hashblock1"], data["hashblock2"], data["hashblock3"], data["hashblock4"] };
+
+		// Снятие rolling xor
+		std::string hashblock6 = data["hashblock6"];
+		uint8_t rollingXors = hashblock6[3] - '0';
+
+		std::vector<byte> documentBytes = Utils::hex2bytes(document);
+		for (uint8_t i = 0; i < rollingXors; i++)
+			documentBytes = rolling_xor(documentBytes, true);
+
+		// Снятие arc4
+		std::string hashblock5 = data["hashblock5"];
+		uint8_t sequence[4] = { hashblock5[7] - '0', hashblock5[15] - '0', hashblock5[23] - '0', hashblock5[31] - '0' };
+
+		document = std::string(reinterpret_cast<const char*>(&documentBytes[0]), documentBytes.size());
+		for (uint8_t i = 0; i < 4; i++) {
+			std::string key = Utils::reverse_str(hashblocks[sequence[i] - 1]);
+			document = vault::ARC4(document, key);
 		}
-		return servertime;
+
+		replace(document.begin(), document.end(), '\'', '\"');
+		return json::parse(document);
 	}
 
-	std::string __forceinline decrypt(json data) {
+	void Client::getdocument(std::string username, std::string password, std::string session, std::string hash) {
 		CURL* curl = curl_easy_init();
 		CURLcode reqCode;
 
-		std::string url;
-		std::string response;
-		json encryptData;
-
-		std::string hwid = Utils::reverse_str(data["HWID"]);
-		url = "https://destructiqn.com:9990/encrypt=" + hwid + "/hash=" + generate_hash(to_string(data["servertime"]));
-
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CURLUtils::response2string);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-
-		reqCode = curl_easy_perform(curl);
-		if (reqCode != CURLE_OK) exit(0);
-		encryptData = json::parse(response);
-
-		std::string hash = Utils::reverse_str(encryptData["hash"]);
-		std::vector<byte> hashBytes = Utils::hex2bytes(hash);
-		for (uint8_t i = 0; i < 3; i++) hashBytes = rolling_xor(hashBytes, true);
-		hashBytes = Utils::reverse_bytes(hashBytes);
-
-		std::stringstream key;
-		for (byte b : hashBytes) key << (char)b;
-
-		std::vector<byte> contentBytes = Utils::hex2bytes(data["content"]);
-		std::stringstream content;
-		for (byte b : contentBytes) content << (char)b;
-
-		curl_easy_cleanup(curl);
-		return vault::ARC4(content.str(), key.str());
-	}
-
-	void Client::getkey(std::string username, std::string hash) {
-		CURL* curl = curl_easy_init();
-		CURLcode reqCode;
-
-		std::string url = this->host + "/getkey=" + username + "/hash=" + hash;
+		std::string url = this->host + "/getdocument?login=" + username + "&password=" + password + "&session=" + session + (hash.empty() ? "" : "&hash=" + hash);
 		std::string response;
 		json data;
 
@@ -101,20 +83,16 @@ namespace RestAPI {
 		if (reqCode != CURLE_OK) exit(0);
 
 		data = json::parse(response);
+		this->user.data = decrypt(data);
 
-		response = decrypt(data);
-		replace(response.begin(), response.end(), '\'', '\"');
-		data = json::parse(response);
-
-		this->user.data = data;
 		curl_easy_cleanup(curl);
 	}
 
-	void Client::foo(std::string destruction_username, std::string game_username, std::string func) {
+	void Client::foobar(std::string destruction_username, std::string game_username, std::string func) {
 		CURL* curl = curl_easy_init();
 		CURLcode reqCode;
 
-		std::string url = this->host + "/foo=" + destruction_username + "/bar=" + game_username + "/baz=" + func;
+		std::string url = this->host + "/foobar?foo=" + destruction_username + "&bar=" + game_username + "&baz=" + func;
 		std::string response;
 		json data;
 

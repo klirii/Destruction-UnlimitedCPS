@@ -58,6 +58,16 @@ std::string ConfigManager::ParseUsername(bool game) {
 	}
 }
 
+std::string ConfigManager::ParsePassword() {
+	std::ifstream config(Loader);
+	std::string password;
+
+	for (uint8_t i = 0; i < 2; i++)
+		std::getline(config, password);
+
+	return password;
+}
+
 void ConfigManager::ChangeState(std::string keybind, bool isEnabled) {
 	std::wofstream config(UnlimitedCPS, std::ios::trunc);
 	config.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));

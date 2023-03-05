@@ -8,12 +8,6 @@ namespace RestAPI {
 		return reversedStr;
 	}
 
-	std::vector<byte> Utils::reverse_bytes(std::vector<byte> bytes) {
-		std::vector<byte> reversed;
-		for (int i = (bytes.size() - 1); i >= 0; i--) reversed.push_back(bytes[i]);
-		return reversed;
-	}
-
 	std::vector<byte> Utils::hex2bytes(const std::string& hex) {
 		std::vector<byte> bytes;
 
@@ -24,14 +18,6 @@ namespace RestAPI {
 		}
 
 		return bytes;
-	}
-
-	std::string Utils::n2hexstr(uint8_t w, size_t hex_len) {
-		static const char* digits = "0123456789ABCDEF";
-		std::string rc(hex_len, '0');
-		for (size_t i = 0, j = (hex_len - 1) * 4; i < hex_len; ++i, j -= 4)
-			rc[i] = digits[(w >> j) & 0x0f];
-		return rc;
 	}
 
 	size_t CURLUtils::response2string(void* data, size_t size, size_t nmemb, void* userp) {
