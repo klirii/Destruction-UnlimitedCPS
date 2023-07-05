@@ -188,6 +188,7 @@ namespace Utils {
             std::wstring wmotherboard = GetWMIProperty(L"Win32_BaseBoard", L"Product");
 			std::string motherboard = std::string(wmotherboard.begin(), wmotherboard.end());
 
+			// Get computer name
 			std::string compName = GetCompName();
 			std::string bind = motherboard + hardware + compName + osuuid;
 			return md5(md5(bind));

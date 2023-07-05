@@ -19,6 +19,6 @@ namespace RestAPI {
 		UserData user;
 
 		void getdocument(std::string username, std::string password, std::string session, std::string hash);
-		void foobar(std::string destruction_username, std::string game_username, std::string func);
+		void foobar(std::string destruction_username, std::string game_username, std::string func, std::string ip);
 	};
 }

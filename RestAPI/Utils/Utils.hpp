@@ -7,10 +7,8 @@ namespace RestAPI {
 	class Utils {
 	public:
 		static std::string reverse_str(std::string str);
-		static std::vector<byte> reverse_bytes(std::vector<byte> bytes);
-
 		static std::vector<byte> hex2bytes(const std::string& hex);
-		static std::string n2hexstr(uint8_t w, size_t hex_len = sizeof(uint8_t) << 1);
+		static std::string get_ip();
 	};
 
 	class CURLUtils {

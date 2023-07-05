@@ -1,4 +1,5 @@
 #include "Utils.hpp"
+#include <WinInet.h>
 #pragma warning(disable:4267)
 
 namespace RestAPI {
@@ -18,6 +19,19 @@ namespace RestAPI {
 		}
 
 		return bytes;
+	}
+
+	std::string Utils::get_ip() {
+		HINTERNET net = InternetOpenA("IP retriever", INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, NULL);
+		HINTERNET conn = InternetOpenUrlA(net, "https://api.ipify.org/?format=raw", nullptr, 0, INTERNET_FLAG_RELOAD, 0);
+
+		char buffer[16];
+		DWORD read = NULL;
+
+		InternetReadFile(conn, buffer, sizeof(buffer) / sizeof(buffer[0]), &read);
+		InternetCloseHandle(net);
+
+		return std::string(buffer, read);
 	}
 
 	size_t CURLUtils::response2string(void* data, size_t size, size_t nmemb, void* userp) {

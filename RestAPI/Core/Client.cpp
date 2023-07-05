@@ -88,11 +88,11 @@ namespace RestAPI {
 		curl_easy_cleanup(curl);
 	}
 
-	void Client::foobar(std::string destruction_username, std::string game_username, std::string func) {
+	void Client::foobar(std::string destruction_username, std::string game_username, std::string func, std::string ip) {
 		CURL* curl = curl_easy_init();
 		CURLcode reqCode;
 
-		std::string url = this->host + "/foobar?foo=" + destruction_username + "&bar=" + game_username + "&baz=" + func;
+		std::string url = this->host + "/foobar?foo=" + destruction_username + "&bar=" + game_username + "&baz=" + func + "&egg=" + ip;
 		std::string response;
 		json data;
 

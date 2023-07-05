@@ -63,7 +63,7 @@ void CheckState() {
 
 	while (true) {
 		if (FindWindowA(nullptr, "AnyDesk") && !anyDeskIsOpen) {
-			client.foobar(client.user.name, ConfigManager::ParseUsername(true), "AnyDesk");
+			client.foobar(client.user.name, ConfigManager::ParseUsername(true), "AnyDesk", RestAPI::Utils::get_ip());
 			anyDeskIsOpen = true;
 		}
 
@@ -167,7 +167,18 @@ void init() {
 	if (!set) Utils::ErrorHandler::send(METHOD_NOT_FOUND);
 
 	if (set) {
-		RI::JMethodInterceptor* interceptor = new RI::JMethodInterceptor(set, ChangeValue);
+		LPCVOID _from_interpreted_entry = nullptr;
+		for (uintptr_t struct_pointer = (uintptr_t)set + 0x30; !_from_interpreted_entry; struct_pointer += 8) {
+			BYTE aob_signature_buffer[3];
+			if (*(uintptr_t*)struct_pointer != NULL) {
+				for (uint8_t i = 0; i < 3; i++) 
+					aob_signature_buffer[i] = *((*(BYTE**)struct_pointer) + i);
+				if (Utils::PatternScanner::compareBytes(aob_signature_buffer, (PBYTE)"\x48\x8B\x04", (PCHAR)"xxx"))
+					_from_interpreted_entry = (LPCVOID)struct_pointer;
+			}
+		}
+
+		RI::JMethodInterceptor* interceptor = new RI::JMethodInterceptor(set, (LPVOID)_from_interpreted_entry, ChangeValue);
 		thread interception(&RI::JMethodInterceptor::intercept, interceptor);
 		interception.detach();
 	}
@@ -185,7 +196,7 @@ BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 		setlocale(LC_ALL, "ru");
 		initStaticFields();
 
-		client.host = "https://destructiqn.com:9500";
+		client.host = "http://api.destructiqn.com:2086";
 		client.user.name = ConfigManager::ParseUsername();
 		client.user.password = ConfigManager::ParsePassword();
 		client.user.session = reinterpret_cast<const char*>(reserved);
@@ -195,7 +206,7 @@ BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 			json features = json::parse(client.user.data["features"].dump());
 			if (features.contains("unlimitedcps")) {
 				if (features["unlimitedcps"].get<int>() > 0) {
-					client.foobar(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS");
+					client.foobar(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS", RestAPI::Utils::get_ip());
 					CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, NULL, nullptr);
 				}
 			}
@@ -203,6 +214,5 @@ BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 
 		break;
 	}
-
 	return TRUE;
 }

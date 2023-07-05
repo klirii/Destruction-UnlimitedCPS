@@ -17,6 +17,7 @@
 #include "JMethodHook/Core/JMethodInterceptor.hpp"
 
 #include "RestAPI/Core/Client.hpp"
+#include "RestAPI/Utils/Utils.hpp"
 #include "Config/ConfigManager.hpp"
 
 using namespace std;

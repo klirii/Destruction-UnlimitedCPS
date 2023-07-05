@@ -15,10 +15,4 @@ public:
 	unsigned short _method_size;
 	uint8_t _intrinsic_id;
 	uint8_t _flags;
-
-	void* _i2i_entry;
-	void* _adapter;
-	void* _from_compiled_entry;
-	void* _code;
-	void* _from_interpreted_entry;
 };
