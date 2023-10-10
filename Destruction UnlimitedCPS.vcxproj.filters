@@ -16,12 +16,6 @@
     <Filter Include="Исходные файлы\JMethodHook">
       <UniqueIdentifier>{afa39464-592e-4174-a882-f7ba2fca9438}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\JMethodHook\Core">
-      <UniqueIdentifier>{43bc7d05-4604-4637-ba3f-60f327d59ade}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\JMethodHook\Core\ASM">
-      <UniqueIdentifier>{507f782b-35a6-468a-8fb5-fb499cfba6b3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\JMethodHook\JVM">
       <UniqueIdentifier>{424f2835-a1f0-4822-b899-bb4ae248e32d}</UniqueIdentifier>
     </Filter>
@@ -80,15 +74,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="JMethodHook\Core\RegistersInterceptor.hpp">
-      <Filter>Исходные файлы\JMethodHook\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="JMethodHook\Core\JMethodInterceptor.hpp">
-      <Filter>Исходные файлы\JMethodHook\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="JMethodHook\Core\ASM\AssemblerAPI.hpp">
-      <Filter>Исходные файлы\JMethodHook\Core\ASM</Filter>
-    </ClInclude>
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\constantPool.hpp">
       <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops</Filter>
     </ClInclude>
@@ -136,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="Utils\Keybind.hpp">
       <Filter>Исходные файлы\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="JMethodHook\JavaHook.hpp">
+      <Filter>Исходные файлы\JMethodHook</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

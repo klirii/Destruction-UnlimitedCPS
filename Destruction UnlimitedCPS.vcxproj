@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>Intel C++ Compiler 19.2</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>Intel C++ Compiler 19.2</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>Intel C++ Compiler 19.2</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>Intel C++ Compiler 19.2</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -81,8 +81,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\Program Files\Java\jdk1.8.0_191\include;D:\Program Files\Java\jdk1.8.0_191\include\win32;D:\Program Files\Java\jdk1.8.0_191\include\win32\bridge;D:\libs\curl\Release x64\include;D:\libs\json\include;D:\libs\md5cpp\include;D:\libs\cpp_string_utils-main\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\Java\jdk1.8.0_191\include;C:\Program Files\Java\jdk1.8.0_191\include\win32;C:\Program Files\Java\jdk1.8.0_191\include\win32\bridge;C:\libs\curl\Release x64\include;C:\libs\json\include;C:\libs\md5cpp\include;C:\libs\cpp_string_utils-main\include;$(IncludePath)</IncludePath>
     <TargetName>unlimitedcps</TargetName>
+    <LibraryPath>C:\libs\curl\Release x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -132,14 +133,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\libs\arc4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\libs\arc4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D:\libs\curl\Release x64\lib\libcurl_a.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcurl_a.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -152,9 +153,7 @@
   <ItemGroup>
     <ClInclude Include="Config\ConfigManager.hpp" />
     <ClInclude Include="DllMain.hpp" />
-    <ClInclude Include="JMethodHook\Core\ASM\AssemblerAPI.hpp" />
-    <ClInclude Include="JMethodHook\Core\JMethodInterceptor.hpp" />
-    <ClInclude Include="JMethodHook\Core\RegistersInterceptor.hpp" />
+    <ClInclude Include="JMethodHook\JavaHook.hpp" />
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\constantPool.hpp" />
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\constMethod.hpp" />
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\instanceKlass.hpp" />

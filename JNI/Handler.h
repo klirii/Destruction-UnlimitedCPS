@@ -5,6 +5,7 @@
 class JNIHandler {
 public:
 	static HMODULE jvm;
+	static JavaVM* vm;
 	static JNIEnv* env;
 	static jobject ClassLoader;
 
@@ -16,8 +17,6 @@ public:
 
 	static jclass FindClassFromCaller(const char* name);
 	static jclass FindLoadedClass(const char* name);
-private:
-	static JavaVM* vm;
 
 	typedef jclass(JNICALL* pJVM_FindClassFromCaller)(JNIEnv* env, const char* name, jboolean init, jobject loader, jclass caller);
 	static  pJVM_FindClassFromCaller JVM_FindClassFromCaller;

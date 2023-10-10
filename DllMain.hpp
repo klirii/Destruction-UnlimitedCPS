@@ -14,7 +14,7 @@
 #include "Utils/Keybind.hpp"
 
 #include "JMethodHook/JVM/hotspot/src/share/vm/oops/instanceKlass.hpp"
-#include "JMethodHook/Core/JMethodInterceptor.hpp"
+#include "JMethodHook/JavaHook.hpp"
 
 #include "RestAPI/Core/Client.hpp"
 #include "RestAPI/Utils/Utils.hpp"
@@ -22,6 +22,6 @@
 
 using namespace std;
 using json = nlohmann::json;
-namespace RI = RegistersInterceptor;
 
 static RestAPI::Client client;
+static JavaHook* hook = nullptr;

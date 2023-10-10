@@ -5,8 +5,6 @@
 
 class Keybind {
 public:
-	static PBYTE isEnabled;
-
 	static byte GetVirtualKeyCodeByKeyName(std::string keyName) {
 		std::map<std::string, byte> Keycodes = {
 			{"MBUTTON", VK_MBUTTON},
@@ -115,5 +113,3 @@ public:
 		return 0;
 	}
 };
-
-PBYTE Keybind::isEnabled = nullptr;
