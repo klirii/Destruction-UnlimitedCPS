@@ -28,6 +28,7 @@ public:
 	} _saved;
 
 	jobject _lock;
+	uintptr_t _unknown_value;
 
 	intptr_t* base() const { return (intptr_t*)(((char*)this) + sizeof(ConstantPool)); }
 

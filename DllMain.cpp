@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "DllMain.hpp"
 
 #pragma warning(disable:6031)
@@ -162,7 +164,7 @@ void init() {
 	HANDLE hCheckLicense = CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(CheckLicense), nullptr, NULL, nullptr);
 	if (!hCheckLicense) exit(0);
 
-	jclass WalkingBoolean = JNIHandler::FindLoadedClass("net/xtrafrancyz/covered/ObfValue$WalkingBoolean");
+	jclass WalkingBoolean = JNIHandler::FindClass("net.xtrafrancyz.covered.ObfValue$WalkingBoolean");
 	if (!WalkingBoolean) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 
 	Method* set = GetMethod(WalkingBoolean, "set", "(Z)V");

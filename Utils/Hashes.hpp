@@ -166,16 +166,16 @@ namespace Utils {
 
 		static __forceinline std::string GetReHash() {
 			HKEY hKey;
+            std::string osuuid;
 			const wchar_t* lpSubKey = nullptr;
 
 			// Get VimeWorld OSUUID
-			if (IsWindows8OrGreater()) lpSubKey = L"SOFTWARE\\VimeWorld";
+            
+			if (IsWindows10OrGreater()) lpSubKey = L"SOFTWARE\\VimeWorld"; 
 			else if (IsWindows7OrGreater()) lpSubKey = L"Software\\VimeWorld";
 
 			LSTATUS status = RegOpenKeyExW(HKEY_CURRENT_USER, lpSubKey, NULL, KEY_READ, &hKey);
-            if (status != ERROR_SUCCESS) exit(0);
-
-			std::string osuuid = GetRegValue(hKey, L"osuuid");
+            if (status == ERROR_SUCCESS) osuuid = GetRegValue(hKey, L"osuuid");
 
 			// Get hardware guid
 			status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\IDConfigDB\\Hardware Profiles\\0001", NULL, KEY_READ, &hKey);

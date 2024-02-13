@@ -17,6 +17,7 @@ public:
 
 	static jclass FindClassFromCaller(const char* name);
 	static jclass FindLoadedClass(const char* name);
+	static jclass FindClass(const char* name, jobject loader = ClassLoader);
 
 	typedef jclass(JNICALL* pJVM_FindClassFromCaller)(JNIEnv* env, const char* name, jboolean init, jobject loader, jclass caller);
 	static  pJVM_FindClassFromCaller JVM_FindClassFromCaller;

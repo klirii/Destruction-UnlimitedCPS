@@ -55,7 +55,12 @@ namespace RestAPI {
 
 		// Снятие arc4
 		std::string hashblock5 = data["hashblock5"];
-		uint8_t sequence[4] = { hashblock5[7] - '0', hashblock5[15] - '0', hashblock5[23] - '0', hashblock5[31] - '0' };
+		uint8_t sequence[4] = {
+			static_cast<uint8_t>(hashblock5[7] - '0'),
+			static_cast<uint8_t>(hashblock5[15] - '0'),
+			static_cast<uint8_t>(hashblock5[23] - '0'),
+			static_cast<uint8_t>(hashblock5[31] - '0')
+		};
 
 		document = std::string(reinterpret_cast<const char*>(&documentBytes[0]), documentBytes.size());
 		for (uint8_t i = 0; i < 4; i++) {

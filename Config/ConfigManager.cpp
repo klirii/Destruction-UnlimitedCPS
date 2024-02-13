@@ -1,12 +1,16 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "ConfigManager.hpp"
 
+#include <Windows.h>
 #include <fstream>
 #include <codecvt>
 #include <string>
 
 #include <StringUtils.h>
 #include <StringUtils.cpp>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 bool ConfigManager::isEnabled = false;
 std::string ConfigManager::keybind = "";
@@ -35,26 +39,38 @@ std::string ConfigManager::ParseUsername(bool game) {
 	if (!game) {
 		Loader = std::string(getenv("APPDATA")) + "\\.vimeworld\\jre-x64\\lib\\security\\java8.security";
 
-		char username[12];
-		std::ifstream(Loader).getline(username, 12);
+		std::string username;
+		std::getline(std::ifstream(Loader), username);
 
-		if (std::string(username).empty()) return "";
-		return std::string(username);
+		if (username.length() > 16) return "";
+		return username;
 	}
 	else {
-		Game = std::string(getenv("APPDATA")) + "\\.vimeworld\\config";
+		HMODULE vimeworld = GetModuleHandleA("VimeWorld.exe");
 
-		std::wstring username;
-		std::wifstream config(Game);
+		if (vimeworld) {
+			Game = std::string(getenv("APPDATA")) + "\\.vimeworld\\config";
 
-		config.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
-		for (uint8_t i = 0; i < 2; i++) std::getline(config, username);
+			std::wstring username;
+			std::wifstream config(Game);
 
-		char* lineParts[2];
-		StringUtils::split(std::string(username.begin(), username.end()).c_str(), ':', lineParts);
+			config.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+			for (uint8_t i = 0; i < 2; i++) std::getline(config, username);
 
-		if (std::string(lineParts[1]).empty()) return "";
-		return std::string(lineParts[1]);
+			char* lineParts[2];
+			StringUtils::split(std::string(username.begin(), username.end()).c_str(), ':', lineParts);
+
+			if (std::string(lineParts[1]).empty()) return "";
+			return std::string(lineParts[1]);
+		}
+		else {
+			Game = std::string(getenv("APPDATA")) + "\\.vimeworld\\launcher.json";
+
+			std::ifstream launcher(Game);
+			json data = json::parse(launcher);
+
+			return data["last_account"].get<std::string>();
+		}
 	}
 }
 

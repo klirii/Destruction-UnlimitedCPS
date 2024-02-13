@@ -89,9 +89,6 @@
     <ClInclude Include="JMethodHook\JVM\hotspot\src\share\vm\oops\symbol.hpp">
       <Filter>Исходные файлы\JMethodHook\JVM\hotspot\src\share\vm\oops</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\PatternScanner.hpp">
-      <Filter>Исходные файлы\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="JNI\Handler.h">
       <Filter>Исходные файлы\JNI</Filter>
     </ClInclude>
@@ -124,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="JMethodHook\JavaHook.hpp">
       <Filter>Исходные файлы\JMethodHook</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\PatternScanner.hpp">
+      <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
