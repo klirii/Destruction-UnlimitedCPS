@@ -7,14 +7,13 @@
 #include <Windows.h>
 #include <thread>
 
-#include "JNI/Handler.h"
-#include "Utils/PatternScanner.hpp"
+#include "JvmStructures.hpp"
+#include "JavaHook.hpp"
+#include "JLI.hpp"
+
 #include "Utils/Hashes.hpp"
 #include "Utils/Keybind.hpp"
 #include "Utils/ErrorHandler.hpp"
-
-#include "JMethodHook/JVM/hotspot/src/share/vm/oops/instanceKlass.hpp"
-#include "JMethodHook/JavaHook.hpp"
 
 #include "RestAPI/Core/Client.hpp"
 #include "RestAPI/Utils/Utils.hpp"

@@ -3,7 +3,9 @@
 #include <iostream>
 
 #define METHOD_NOT_FOUND 0x01
-#define CLASS_NOT_FOUND 0x02
+#define CLASS_NOT_FOUND	 0x02
+#define FIELD_NOT_FOUND  0x03
+#define OBJECT_NOT_FOUND 0x04
 
 #define KEYBOARD_HOOK_ERROR 0x03
 #define MOUSE_HOOK_ERROR 0x04

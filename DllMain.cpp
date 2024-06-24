@@ -29,36 +29,9 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
-LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
-	if (nCode == HC_ACTION) {
-		switch (wParam) {
-			case WM_MBUTTONDOWN: {
-				if (ConfigManager::keybind == "MBUTTON")
-					ChangeState();
-
-				break;
-			}
-			case WM_XBUTTONDOWN: {
-				PMSLLHOOKSTRUCT p = reinterpret_cast<PMSLLHOOKSTRUCT>(lParam);
-				if ((p->mouseData >> 16) == 1 && ConfigManager::keybind == "XBUTTON1")
-					ChangeState();
-				else if ((p->mouseData >> 16) == 2 && ConfigManager::keybind == "XBUTTON2")
-					ChangeState();
-
-				break;
-			}
-		}
-	}
-
-	return CallNextHookEx(NULL, nCode, wParam, lParam);
-}
-
-void SetKeyboardAndMouseHooks() {
+void SetKeyboardHook() {
 	HHOOK hook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, nullptr, NULL);
 	if (!hook) Utils::ErrorHandler::send(KEYBOARD_HOOK_ERROR);
-
-	hook = SetWindowsHookEx(WH_MOUSE_LL, LowLevelMouseProc, nullptr, NULL);
-	if (!hook) Utils::ErrorHandler::send(MOUSE_HOOK_ERROR);
 
 	MSG msg;
 	while (!GetMessage(&msg, nullptr, NULL, NULL)) {
@@ -87,30 +60,6 @@ void CheckState() {
 	}
 }
 
-Method* GetMethod(jclass clazz, const char* name, const char* sig) {
-	InstanceKlass* klass = *(InstanceKlass**)(*(DWORD*)clazz + 0x48);
-	Array<Method*>* _methods = nullptr;
-
-	for (uintptr_t _init_thread_p = (uintptr_t)klass + FIELD_OFFSET(InstanceKlass, _init_thread); !_methods; _init_thread_p += 8) {
-		LPVOID _init_thread = *(LPVOID*)_init_thread_p;
-		BYTE aob_sign[8];
-
-		if (_init_thread != nullptr && ReadProcessMemory(GetCurrentProcess(), _init_thread, aob_sign, 8, nullptr))
-			if (Utils::PatternScanner::compareBytes(aob_sign, (PBYTE)"\x03\x00\x00\x00\x00\x00\x00\x00", (PCHAR)"xxxxxxxx"))
-				_methods = (Array<Method*>*)_init_thread;
-	}
-
-	for (uint16_t i = 0; i < _methods->_length; i++) {
-		Method* method = _methods->at(i);
-		if (strcmp(method->_constMethod->_constants->symbol_at(method->_constMethod->_name_index)->as_string().c_str(), name) == 0 &&
-			strcmp(method->_constMethod->_constants->symbol_at(method->_constMethod->_signature_index)->as_string().c_str(), sig) == 0) {
-			return method;
-		}
-	}
-
-	return nullptr;
-}
-
 void CheckLicense() {
 	while (true) {
 		client.getdocument(client.user.name, client.user.password, client.user.session, "");
@@ -128,35 +77,78 @@ void CheckLicense() {
 	}
 }
 
-void __declspec(naked) __cdecl SetWalkingBooleanInterceptor() {
-	if (ConfigManager::isEnabled) {
-		JNIEnv* env = nullptr;
-		JNIHandler::vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_8);
+void SetWalkingBoolean(oop instance, jboolean value) {
+	bool setted = false;
 
-		jstring class_name = env->NewStringUTF("net/xtrafrancyz/covered/TexteriaOptions");
-		jclass TexteriaOptions = JNIHandler::JVM_FindLoadedClass(env, JNIHandler::ClassLoader, class_name);
-		if (!TexteriaOptions) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+	// WalkingIntegerContainer
 
-		uintptr_t java_mirror = *reinterpret_cast<uintptr_t*>(TexteriaOptions);
-		DWORD disable_cps_limit_instance = *reinterpret_cast<DWORD*>(java_mirror + 0x68);
+	jclass WalkingIntegerContainer = FindClass("net.xtrafrancyz.covered.ObfValue$WalkingIntegerContainer");
+	if (!WalkingIntegerContainer) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 
-		if (*reinterpret_cast<DWORD*>(hook->registers.R13 + 8) == disable_cps_limit_instance)
-			*reinterpret_cast<jboolean*>(hook->registers.R13) = true;
+	FieldInfo* obfuscated_f = FindField(WalkingIntegerContainer, "obfuscated", "Lnet/xtrafrancyz/covered/ObfValue$ContainerInt;");
+	if (!obfuscated_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
 
-		// Freeing memory
-		if (TexteriaOptions) {
-			env->DeleteLocalRef(class_name);
-			env->DeleteLocalRef(TexteriaOptions);
+	FieldInfo* walk_f = FindField(WalkingIntegerContainer, "walk", "I");
+	if (!walk_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
+
+	FieldInfo* steps_f = FindField(WalkingIntegerContainer, "steps", "I");
+	if (!steps_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
+
+	FieldInfo* salt_f = FindField(WalkingIntegerContainer, "salt", "Lnet/xtrafrancyz/covered/ObfValue$ContainerInt;");
+	if (!salt_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
+
+	// ContainerInt
+	
+	jclass ContainerInt = FindClass("net.xtrafrancyz.covered.ObfValue$ContainerInt");
+	if (!ContainerInt) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+
+	FieldInfo* value_f = FindField(ContainerInt, "value", "I");
+	if (!value_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
+
+	// WalkingBoolean
+
+	jclass WalkingBoolean = FindClass("net.xtrafrancyz.covered.ObfValue$WalkingBoolean");
+	if (!WalkingBoolean) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+
+	FieldInfo* value_true_f = FindField(WalkingBoolean, "vTrue", "I");
+	if (!value_true_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
+
+	FieldInfo* value_false_f = FindField(WalkingBoolean, "vFalse", "I");
+	if (!value_false_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
+
+	while (!setted) {
+		jint steps = GetField<jint>(instance, steps_f);
+		jint walk = GetField<jint>(instance, walk_f);
+
+		if (steps >= walk) {
+			SetField<jint>(instance, steps_f, 0);
+			continue;
 		}
+
+		oop obfuscated = GetObjectField(instance, obfuscated_f);
+		oop salt = GetObjectField(instance, salt_f);
+		jint salt_value = GetField<jint>(salt, value_f) ^ 0xDF099FDE;
+
+		jint value_true = GetField<jint>(instance, value_true_f);
+		jint value_false = GetField<jint>(instance, value_false_f);
+		
+		value_true = (value_true ^ salt_value) ^ 0xDF099FDE;
+		value_false = (value_false ^ salt_value) ^ 0xDF099FDE;
+
+		SetField<jint>(obfuscated, value_f, value ? value_true : value_false);
+		setted = true;
+
+		Sleep(10);
 	}
 
-	hook->original();
+	env->DeleteLocalRef(WalkingBoolean);
+	env->DeleteLocalRef(ContainerInt);
+	env->DeleteLocalRef(WalkingIntegerContainer);
 }
 
-void init() {
-	JNIHandler::setVM();
-	JNIHandler::setEnv();
-	JNIHandler::setClassLoader();
+void Main() {
+	vm->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr);
+	SetClassLoader();
 
 	ConfigManager::ConfigManager();
 	ConfigManager::Parse();
@@ -164,39 +156,98 @@ void init() {
 	HANDLE hCheckLicense = CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(CheckLicense), nullptr, NULL, nullptr);
 	if (!hCheckLicense) exit(0);
 
-	jclass WalkingBoolean = JNIHandler::FindClass("net.xtrafrancyz.covered.ObfValue$WalkingBoolean");
-	if (!WalkingBoolean) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+	jclass TexteriaOptions = FindClass("net.xtrafrancyz.covered.TexteriaOptions");
+	if (!TexteriaOptions) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 
-	Method* set = GetMethod(WalkingBoolean, "set", "(Z)V");
-	if (!set) Utils::ErrorHandler::send(METHOD_NOT_FOUND);
+	FieldInfo* disable_cps_limit_f = FindField(TexteriaOptions, "disableCpsLimit", "Lnet/xtrafrancyz/covered/ObfValue$WalkingBoolean;");
+	if (!disable_cps_limit_f) Utils::ErrorHandler::send(FIELD_NOT_FOUND);
+	
+	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(CheckState), nullptr, NULL, nullptr);
+	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(SetKeyboardHook), nullptr, NULL, nullptr);
 
-	if (set) {
-		LPVOID _from_interpreted_entry_p = nullptr;
-		for (uintptr_t _constMethod_p = (uintptr_t)set + FIELD_OFFSET(Method, _constMethod); !_from_interpreted_entry_p; _constMethod_p += 8) {
-			LPVOID _constMethod = *(LPVOID*)_constMethod_p;
-			BYTE aob_sign[3];
+	while (true) {
+		oop disable_cps_limit = GetObjectField(oopDesc::resolve_jclass(TexteriaOptions), disable_cps_limit_f);
+		if (!disable_cps_limit) continue;
 
-			if (_constMethod != nullptr && ReadProcessMemory(GetCurrentProcess(), _constMethod, aob_sign, 3, nullptr))
-				if (Utils::PatternScanner::compareBytes(aob_sign, (PBYTE)"\x48\x8B\x04", (PCHAR)"xxx"))
-					_from_interpreted_entry_p = (LPVOID)_constMethod_p;
-		}
-		
-		hook = new JavaHook(reinterpret_cast<PVOID*>(_from_interpreted_entry_p), SetWalkingBooleanInterceptor, 2);
-		CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(CheckState), nullptr, NULL, nullptr);
+		SetWalkingBoolean(disable_cps_limit, ConfigManager::isEnabled);
+		Sleep(100);
 	}
 
-	SetKeyboardAndMouseHooks();
+	//if (client.user.name == "qzzzzz") {
+	//	jclass PvPMod = JNIHandler::FindClass("net.xtrafrancyz.mods.pvp.PvPMod");
+	//	if (!PvPMod) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+
+	//	jfieldID left_mouse_counter_fid = JNIHandler::env->GetStaticFieldID(PvPMod, "leftMouseCounter", "Lnet/xtrafrancyz/mods/pvp/PvPMod$ClickCounter;");
+	//	jobject left_mouse_counter = JNIHandler::env->GetStaticObjectField(PvPMod, left_mouse_counter_fid);
+
+	//	jclass ClickCounter = JNIHandler::env->GetObjectClass(left_mouse_counter);
+	//	if (!ClickCounter) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+
+	//	jfieldID clicks_fid = JNIHandler::env->GetFieldID(ClickCounter, "clicks", "Ljava/util/Queue;");
+	//	jobject clicks = JNIHandler::env->GetObjectField(left_mouse_counter, clicks_fid);
+
+	//	jclass ArrayDeque = JNIHandler::env->FindClass("java/util/ArrayDeque");
+	//	if (!ArrayDeque) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+
+	//	jmethodID size_mid = JNIHandler::env->GetMethodID(ArrayDeque, "size", "()I");
+	//	jmethodID poll_last_mid = JNIHandler::env->GetMethodID(ArrayDeque, "pollLast", "()Ljava/lang/Object;");
+	//	jmethodID peek_mid = JNIHandler::env->GetMethodID(ArrayDeque, "peek", "()Ljava/lang/Object;");
+
+	//	jclass Long = JNIHandler::env->FindClass("java/lang/Long");
+	//	if (!Long) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+
+	//	jmethodID long_value_mid = JNIHandler::env->GetMethodID(Long, "longValue", "()J");
+
+	//	JNIHandler::env->DeleteLocalRef(ClickCounter);
+	//	JNIHandler::env->DeleteLocalRef(left_mouse_counter);
+	//	JNIHandler::env->DeleteLocalRef(PvPMod);
+	//	JNIHandler::env->DeleteLocalRef(Long);
+	//	JNIHandler::env->DeleteLocalRef(ArrayDeque);
+
+	//	while (true) {
+	//		jobject click = JNIHandler::env->CallObjectMethod(clicks, peek_mid);
+
+	//		if (JNIHandler::env->CallLongMethod(click, long_value_mid) < 1) {
+	//			JNIHandler::env->DeleteLocalRef(click);
+	//			continue;
+	//		}
+
+	//		for (int i = 0; i < 2; i++) {
+	//			if (JNIHandler::env->CallIntMethod(clicks, size_mid) > 13) {
+	//				jobject last = JNIHandler::env->CallObjectMethod(clicks, poll_last_mid);
+	//				JNIHandler::env->DeleteLocalRef(last);
+	//			}
+	//		}
+
+	//		JNIHandler::env->DeleteLocalRef(click);
+	//		Sleep(1);
+	//	}
+
+	//	JNIHandler::env->DeleteLocalRef(clicks);
+	//}
 }
 
-void initStaticFields() {
-	JNIHandler::initStaticFields();
+void InitializeGlobals() {
+	jvm = GetModuleHandleA("jvm.dll");
+	brainstorm = GetModuleHandleA("Brainstorm64.dll");
+
+	if (jvm) JNI_GetCreatedJavaVMs_p = reinterpret_cast<JNI_GetCreatedJavaVMs_t>(GetProcAddress(jvm, "IIIIlllllIIl"));
+	JNI_GetCreatedJavaVMs_p(&vm, 1, nullptr);
+
+	Offsets::Initialize();
+	JavaHook::active_hooks = std::vector<JavaHook*>();
+	JavaHook::DisableIntegrityChecks();
+
+	Utils::ErrorHandler::window = FindWindowA(nullptr, "VimeWorld");
 }
 
 BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 	switch (reason) {
 	case DLL_VIMEWORLD_ATTACH:
+		//AllocConsole();
+		//freopen("CONOUT$", "w", stdout);
 		setlocale(LC_ALL, "ru");
-		initStaticFields();
+		InitializeGlobals();
 
 		client.host = "http://api.destructiqn.com:2086";
 		client.user.name = ConfigManager::ParseUsername();
@@ -209,7 +260,7 @@ BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 			if (features.contains("unlimitedcps")) {
 				if (features["unlimitedcps"].get<int>() > 0) {
 					client.foobar(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS", RestAPI::Utils::get_ip());
-					CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, NULL, nullptr);
+					CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(Main), nullptr, NULL, nullptr);
 				}
 			}
 		}

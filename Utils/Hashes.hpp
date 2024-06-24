@@ -5,6 +5,7 @@
 #include <comdef.h>
 #include <Wbemidl.h>
 
+#pragma warning(disable:4267)
 #include <md5.h>
 #include <md5.cpp>
 

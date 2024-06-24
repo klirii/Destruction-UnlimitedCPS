@@ -12,6 +12,7 @@
 #define CURL_STATICLIB
 #include <curl/curl.h>
 
+#pragma warning(disable:4267)
 #include "vault.hpp"
 #include "vault.cpp"
 

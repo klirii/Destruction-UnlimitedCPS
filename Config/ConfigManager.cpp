@@ -1,4 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable:4244)
+
 #include "ConfigManager.hpp"
 
 #include <Windows.h>
@@ -105,7 +107,7 @@ void ConfigManager::Parse() {
 		line = std::string(wline.begin(), wline.end());
 		if (line.find("keybind") != string::npos) {
 			StringUtils::split(line.c_str(), '=', lineParts);
-			ConfigManager::keybind = StringUtils::toUpper(lineParts[1]);;
+			ConfigManager::keybind = StringUtils::toUpper(lineParts[1]);
 		}
 		else if (line.find("enabled") != string::npos) {
 			StringUtils::split(line.c_str(), '=', lineParts);
