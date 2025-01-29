@@ -8,7 +8,6 @@
 #define OBJECT_NOT_FOUND 0x04
 
 #define KEYBOARD_HOOK_ERROR 0x03
-#define MOUSE_HOOK_ERROR 0x04
 
 namespace Utils {
 	class ErrorHandler {

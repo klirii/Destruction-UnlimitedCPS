@@ -7,8 +7,6 @@
 #include <Windows.h>
 #include <thread>
 
-#include "JvmStructures.hpp"
-#include "JavaHook.hpp"
 #include "JLI.hpp"
 
 #include "Utils/Hashes.hpp"
@@ -23,4 +21,3 @@ using namespace std;
 using json = nlohmann::json;
 
 static RestAPI::Client client;
-static JavaHook* hook = nullptr;

@@ -6,8 +6,6 @@
 
 #pragma warning(disable:6386)
 #pragma warning(disable:26812)
-#pragma warning(disable:4244)
-#pragma warning(disable:4267)
 
 class AOBScanner {
 private:
@@ -16,7 +14,7 @@ private:
 		if (!pattern) return {};
 		if (!pattern[0] || pattern[0] == ' ') return {};
 
-		unsigned __int16 pattern_len = strlen(pattern) + 1;
+		unsigned __int16 pattern_len = static_cast<unsigned __int16>(strlen(pattern) + 1);
 		char* pattern_copy = new char[pattern_len];
 		strcpy_s(pattern_copy, pattern_len, pattern);
 
@@ -31,7 +29,7 @@ private:
 			else if ((pattern[i] == ' ' || pattern[i] == '\0') && sequence == 2) {
 				sequence = 0;
 				pattern_copy[i] = '\0';
-				pattern_bytes.push_back(strtol(pattern_copy + (i - 2), nullptr, 16));
+				pattern_bytes.push_back(static_cast<BYTE>(strtol(pattern_copy + (i - 2), nullptr, 16)));
 				*mask_buf += "x";
 			}
 			else if (pattern[i] == '?') {
@@ -43,14 +41,14 @@ private:
 					else {
 						pattern_copy[i] = '0';
 						if (pattern[i + 1] != '\0') pattern_copy[i + 1] = '\0';
-						pattern_bytes.push_back(strtol(pattern_copy + (i - 1), nullptr, 16));
+						pattern_bytes.push_back(static_cast<BYTE>(strtol(pattern_copy + (i - 1), nullptr, 16)));
 						*mask_buf += "1";
 					}
 				}
 				else {
 					pattern_copy[i] = '0';
 					if (pattern[i + 2] != '\0') pattern_copy[i + 2] = '\0';
-					pattern_bytes.push_back(strtol(pattern_copy + i, nullptr, 16));
+					pattern_bytes.push_back(static_cast<BYTE>(strtol(pattern_copy + i, nullptr, 16)));
 					*mask_buf += "2";
 				}
 			}

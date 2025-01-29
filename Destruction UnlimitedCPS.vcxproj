@@ -154,11 +154,12 @@
     <ClInclude Include="AOBScanner.hpp" />
     <ClInclude Include="Config\ConfigManager.hpp" />
     <ClInclude Include="DllMain.hpp" />
-    <ClInclude Include="JavaHook.hpp" />
     <ClInclude Include="JLI.hpp" />
     <ClInclude Include="JvmStructures.hpp" />
+    <ClInclude Include="Offsets.hpp" />
     <ClInclude Include="RestAPI\Core\Client.hpp" />
     <ClInclude Include="RestAPI\Utils\Utils.hpp" />
+    <ClInclude Include="Utils.hpp" />
     <ClInclude Include="Utils\ErrorHandler.hpp" />
     <ClInclude Include="Utils\Hashes.hpp" />
     <ClInclude Include="Utils\Keybind.hpp" />
