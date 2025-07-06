@@ -197,7 +197,11 @@ void SetWalkingIntegerContainer(oop instance, jint value) {
 	while (!is_set) {
 		jint steps = GetField<jint>(instance, steps_f);
 		jint walk = GetField<jint>(instance, walk_f);
-		if (steps >= walk) continue;
+
+		if (steps >= walk) {
+			SetField<jint>(instance, steps_f, 0);
+			continue;
+		}
 
 		oop obfuscated = GetObjectField(instance, obfuscated_f);
 		oop salt = GetObjectField(instance, salt_f);
@@ -236,8 +240,8 @@ void Main() {
 	ConfigManager::ConfigManager();
 	ConfigManager::Parse();
 
-	//HANDLE check_license_handle = CreateThread(nullptr, NULL, (LPTHREAD_START_ROUTINE)CheckLicense, nullptr, NULL, nullptr);
-	//if (!check_license_handle) exit(0);
+	HANDLE check_license_handle = CreateThread(nullptr, NULL, (LPTHREAD_START_ROUTINE)CheckLicense, nullptr, NULL, nullptr);
+	if (!check_license_handle) exit(0);
 	
 	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(CheckState), nullptr, NULL, nullptr);
 	CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(SetKeyboardHook), nullptr, NULL, nullptr);
@@ -253,26 +257,26 @@ void Main() {
 
 BOOL APIENTRY DllMain(HINSTANCE handle, DWORD reason, LPVOID reserved) {
 	switch (reason) {
-	case DLL_PROCESS_ATTACH: // TODO DLL_VIMEWORLD_ATTACH
+	case DLL_VIMEWORLD_ATTACH:
+		//AllocConsole();
+		//freopen("CONOUT$", "w", stdout);
 		setlocale(LC_ALL, "ru");
 
-		//client.host = "http://api.destructiqn.com:2086";
-		//client.user.name = ConfigManager::ParseUsername();
-		//client.user.password = ConfigManager::ParsePassword();
-		//client.user.session = reinterpret_cast<const char*>(reserved);
+		client.host = "http://api.destructiqn.com:2086";
+		client.user.name = ConfigManager::ParseUsername();
+		client.user.password = ConfigManager::ParsePassword();
+		client.user.session = reinterpret_cast<const char*>(reserved);
 
-		//client.getdocument(client.user.name, client.user.password, client.user.session, Utils::Hashes::GetReHash());
-		//if (!client.user.data["features"].empty()) {
-		//	json features = json::parse(client.user.data["features"].dump());
-		//	if (features.contains("unlimitedcps")) {
-		//		if (features["unlimitedcps"].get<int>() > 0) {
-		//			client.foobar(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS", RestAPI::Utils::get_ip());
-		//			CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(Main), nullptr, NULL, nullptr);
-		//		}
-		//	}
-		//}
-
-		CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(Main), nullptr, NULL, nullptr);
+		client.getdocument(client.user.name, client.user.password, client.user.session, Utils::Hashes::GetReHash());
+		if (!client.user.data["features"].empty()) {
+			json features = json::parse(client.user.data["features"].dump());
+			if (features.contains("unlimitedcps")) {
+				if (features["unlimitedcps"].get<int>() > 0) {
+					client.foobar(client.user.name, ConfigManager::ParseUsername(true), "UnlimitedCPS", RestAPI::Utils::get_ip());
+					CreateThread(nullptr, NULL, reinterpret_cast<LPTHREAD_START_ROUTINE>(Main), nullptr, NULL, nullptr);
+				}
+			}
+		}
 	}
 
 	return TRUE;

@@ -39,7 +39,7 @@ BYTE  collected_heap_capacity_offset = NULL;
 #define K_NAME_PATTERN "44 89 71 ? 4C 89 71"
 #define K_NEXT_LINK_PATTERN "4C 89 B1 ? ? ? ? 48 C7"
 #define K_CLASS_LOADER_DATA_PATTERN "44 89 B3 ? ? ? ? 4C 89 B3 ? ? ? ? 4C 89 B3 ? ? ? ? 66 44"
-#define K_JAVA_MIRROR_PATTERN "48 8B 49 ? 48 89 6C 24 ? 48 89"
+#define K_JAVA_MIRROR_PATTERN "48 8B 49 ? 33 F6 8B C6"
 
 #define IK_VFTABLE_PATTERN "48 8D 05 ? ? ? ? 45 33 F6"
 //#define IK_METHODS_PATTERN "4C 8B A2 ? ? ? ? 49 63"
@@ -168,7 +168,7 @@ void DisplayOffsets() {
 
 	// InstanceKlass offsets
 	DEBUG("InstanceKlass vftable address: %p", ik_vftable_address);
-	DEBUG("InstanceKlass _methods offset: %d", ik_methods_offset);
+	//DEBUG("InstanceKlass _methods offset: %d", ik_methods_offset);
 	DEBUG("InstanceKlass _constants offset: %d", ik_constants_offset);
 	DEBUG("InstanceKlass _fields offset: %d", ik_fields_offset);
 
@@ -176,18 +176,18 @@ void DisplayOffsets() {
 	DEBUG("ClassLoaderData _klasses offset: %hhu", cld_klasses_offset);
 
 	// Method offsets
-	DEBUG("Method _constmethod offset: %hhu", m_constmethod_offset);
-	DEBUG("Method _i2i_entry offset: %hhu", m_i2i_entry_offset);
-	DEBUG("Method _code offset: %hhu", m_code_offset);
-	DEBUG("Method _flags offset: %hhu", m_flags_offset);
+	//DEBUG("Method _constmethod offset: %hhu", m_constmethod_offset);
+	//DEBUG("Method _i2i_entry offset: %hhu", m_i2i_entry_offset);
+	//DEBUG("Method _code offset: %hhu", m_code_offset);
+	//DEBUG("Method _flags offset: %hhu", m_flags_offset);
 
 	// nmethod offsets
-	DEBUG("nmethod _verified_entry_point offset: %d", nm_verified_entry_point_offset);
+	//DEBUG("nmethod _verified_entry_point offset: %d", nm_verified_entry_point_offset);
 
 	// ConstMethod offsets
-	DEBUG("ConstMethod _constants offset: %hhu", cm_constants_offset);
-	DEBUG("ConstMethod _name_index offset: %hhu", cm_name_index_offset);
-	DEBUG("ConstMethod _signature_index offset: %hhu", cm_signature_index_offset);
+	//DEBUG("ConstMethod _constants offset: %hhu", cm_constants_offset);
+	//DEBUG("ConstMethod _name_index offset: %hhu", cm_name_index_offset);
+	//DEBUG("ConstMethod _signature_index offset: %hhu", cm_signature_index_offset);
 
 	// ConstantPool offsets
 	DEBUG("ConstantPool sizeof: %hhu", cp_sizeof);

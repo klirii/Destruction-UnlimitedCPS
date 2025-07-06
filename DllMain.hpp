@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#define DLL_VIMEWORLD_ATTACH 0x888
+#define DLL_VIMEWORLD_ATTACH 0xFF
 
 #pragma warning(disable:4312)
 #pragma warning(disable:26451)
