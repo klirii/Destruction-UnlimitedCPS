@@ -129,57 +129,56 @@ void SetKeyboardHook() {
 
 //void HideCPS() {
 //	if (client.user.name == "qzzzzz") {
-//		JNIEnv* local_env = nullptr;
-//		vm->AttachCurrentThread(reinterpret_cast<void**>(&local_env), nullptr);
+//	JNIEnv* local_env = nullptr;
+//	vm->AttachCurrentThread(reinterpret_cast<void**>(&local_env), nullptr);
 //
-//		jclass PvPMod = local_env->FindClass("net/xtrafrancyz/mods/pvp/PvPMod");
-//		if (!PvPMod) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+//	jclass PvPMod = local_env->FindClass("net/xtrafrancyz/mods/pvp/PvPMod");
+//	if (!PvPMod) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 //
-//		jfieldID left_mouse_counter_fid = local_env->GetStaticFieldID(PvPMod, "leftMouseCounter", "Lnet/xtrafrancyz/mods/pvp/PvPMod$ClickCounter;");
-//		jobject left_mouse_counter = local_env->GetStaticObjectField(PvPMod, left_mouse_counter_fid);
+//	jfieldID left_mouse_counter_fid = local_env->GetStaticFieldID(PvPMod, "leftMouseCounter", "Lnet/xtrafrancyz/mods/pvp/PvPMod$ClickCounter;");
+//	jobject left_mouse_counter = local_env->GetStaticObjectField(PvPMod, left_mouse_counter_fid);
 //
-//		jclass ClickCounter = local_env->GetObjectClass(left_mouse_counter);
-//		if (!ClickCounter) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+//	jclass ClickCounter = local_env->GetObjectClass(left_mouse_counter);
+//	if (!ClickCounter) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 //
-//		jfieldID clicks_fid = local_env->GetFieldID(ClickCounter, "clicks", "Ljava/util/Queue;");
-//		jobject clicks = local_env->GetObjectField(left_mouse_counter, clicks_fid);
+//	jfieldID clicks_fid = local_env->GetFieldID(ClickCounter, "clicks", "Ljava/util/Queue;");
+//	jobject clicks = local_env->GetObjectField(left_mouse_counter, clicks_fid);
 //
-//		jclass ArrayDeque = local_env->FindClass("java/util/ArrayDeque");
-//		if (!ArrayDeque) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+//	jclass ArrayDeque = local_env->FindClass("java/util/ArrayDeque");
+//	if (!ArrayDeque) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 //
-//		jmethodID size_mid = local_env->GetMethodID(ArrayDeque, "size", "()I");
-//		jmethodID poll_last_mid = local_env->GetMethodID(ArrayDeque, "pollLast", "()Ljava/lang/Object;");
-//		jmethodID peek_mid = local_env->GetMethodID(ArrayDeque, "peek", "()Ljava/lang/Object;");
+//	jmethodID size_mid = local_env->GetMethodID(ArrayDeque, "size", "()I");
+//	jmethodID poll_last_mid = local_env->GetMethodID(ArrayDeque, "pollLast", "()Ljava/lang/Object;");
+//	jmethodID peek_mid = local_env->GetMethodID(ArrayDeque, "peek", "()Ljava/lang/Object;");
 //
-//		jclass Long = local_env->FindClass("java/lang/Long");
-//		if (!Long) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
+//	jclass Long = local_env->FindClass("java/lang/Long");
+//	if (!Long) Utils::ErrorHandler::send(CLASS_NOT_FOUND);
 //
-//		jmethodID long_value_mid = local_env->GetMethodID(Long, "longValue", "()J");
+//	jmethodID long_value_mid = local_env->GetMethodID(Long, "longValue", "()J");
 //
-//		local_env->DeleteLocalRef(ClickCounter);
-//		local_env->DeleteLocalRef(left_mouse_counter);
-//		local_env->DeleteLocalRef(PvPMod);
-//		local_env->DeleteLocalRef(Long);
-//		local_env->DeleteLocalRef(ArrayDeque);
+//	local_env->DeleteLocalRef(ClickCounter);
+//	local_env->DeleteLocalRef(left_mouse_counter);
+//	local_env->DeleteLocalRef(PvPMod);
+//	local_env->DeleteLocalRef(Long);
+//	local_env->DeleteLocalRef(ArrayDeque);
 //
-//		while (true) {
-//			jobject click = local_env->CallObjectMethod(clicks, peek_mid);
+//	while (true) {
+//		jobject click = local_env->CallObjectMethod(clicks, peek_mid);
 //
-//			if (local_env->CallLongMethod(click, long_value_mid) < 1) {
-//				local_env->DeleteLocalRef(click);
-//				continue;
-//			}
-//
-//			for (int i = 0; i < 2; i++) {
-//				if (local_env->CallIntMethod(clicks, size_mid) > 13) {
-//					jobject last = local_env->CallObjectMethod(clicks, poll_last_mid);
-//					local_env->DeleteLocalRef(last);
-//				}
-//			}
-//
+//		if (local_env->CallLongMethod(click, long_value_mid) < 1) {
 //			local_env->DeleteLocalRef(click);
-//			Sleep(1);
+//			continue;
 //		}
+//
+//		for (int i = 0; i < 2; i++) {
+//			if (local_env->CallIntMethod(clicks, size_mid) > 13) {
+//				jobject last = local_env->CallObjectMethod(clicks, poll_last_mid);
+//				local_env->DeleteLocalRef(last);
+//			}
+//		}
+//
+//		local_env->DeleteLocalRef(click);
+//		Sleep(1);
 //	}
 //}
 
