@@ -1,1 +1,1 @@
-# Fix. No longer supported
+# Фикс. Больше не поддерживается
